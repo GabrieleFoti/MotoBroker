@@ -1,0 +1,16 @@
+---
+import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../lib/contatti';
+---
+<footer class="footer">
+  <div class="contenitore">
+    <p><strong>Motobroker.it</strong> — Intermediazione vendita moto usate tra privati</p>
+    <p>
+      <a href={TELEFONO_TEL}>{TELEFONO_DISPLAY}</a> ·
+      <a href={linkWhatsApp()}>WhatsApp</a>
+    </p>
+  </div>
+</footer>
+<style>
+  .footer { border-top: 1px solid var(--nero-carta); padding: 2rem 0; margin-top: 4rem; color: var(--grigio); font-size: 0.9rem; }
+  .footer a { color: var(--arancione); }
+</style>

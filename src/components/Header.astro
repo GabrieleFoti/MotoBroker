@@ -1,0 +1,22 @@
+---
+import { url } from '../lib/url';
+---
+<header class="header">
+  <div class="contenitore header__riga">
+    <a href={url('/')} class="header__logo">MOTO<span>BROKER.IT</span></a>
+    <nav class="header__nav">
+      <a href={url('/#servizi')}>Servizi</a>
+      <a href={url('/moto/')}>Moto in vendita</a>
+      <a href={url('/#contatti')}>Contatti</a>
+    </nav>
+  </div>
+</header>
+<style>
+  .header { background: var(--nero); border-bottom: 2px solid var(--rosso); position: sticky; top: 0; z-index: 10; }
+  .header__riga { display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; padding-bottom: 0.75rem; gap: 1rem; flex-wrap: wrap; }
+  .header__logo { font-family: var(--font-titoli); font-size: 1.5rem; color: var(--bianco); text-decoration: none; }
+  .header__logo span { color: var(--arancione); }
+  .header__nav { display: flex; gap: 1.25rem; }
+  .header__nav a { text-decoration: none; color: var(--grigio); text-transform: uppercase; font-size: 0.85rem; font-weight: 700; }
+  .header__nav a:hover { color: var(--bianco); }
+</style>

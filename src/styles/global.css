@@ -1,0 +1,53 @@
+@import '@fontsource/anton';
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/700.css';
+
+:root {
+  --nero: #0d0a0a;
+  --nero-carta: #171212;
+  --rosso: #d41217;
+  --rosso-scuro: #8a1014;
+  --arancione: #f28c1e;
+  --bianco: #f5f2f0;
+  --grigio: #b8b2ae;
+  --font-titoli: 'Anton', sans-serif;
+  --font-corpo: 'Inter', sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--nero);
+  color: var(--bianco);
+  font-family: var(--font-corpo);
+  line-height: 1.6;
+}
+
+img { max-width: 100%; display: block; }
+a { color: inherit; }
+
+.contenitore { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
+
+.titolo-sezione {
+  font-family: var(--font-titoli);
+  text-transform: uppercase;
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
+  color: var(--rosso);
+  letter-spacing: 0.02em;
+}
+
+.bottone {
+  display: inline-block;
+  background: var(--rosso);
+  color: var(--bianco);
+  font-family: var(--font-titoli);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.8rem 1.6rem;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.bottone:hover { background: var(--rosso-scuro); }
+.bottone--whatsapp { background: #1fa855; }
+.bottone--whatsapp:hover { background: #16813f; }
