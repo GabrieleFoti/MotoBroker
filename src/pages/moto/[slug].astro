@@ -19,7 +19,7 @@ const { marca, modello, anno, km, cilindrata, prezzo, descrizione, venduta } = e
 const nome = `${marca} ${modello}`;
 const wa = linkWhatsApp(`Ciao! Vorrei informazioni sulla ${nome} (${anno}) vista su Motobroker.it`);
 ---
-<Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`}>
+<Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`} ogImage={foto[0]?.src}>
   <article class="contenitore dettaglio">
     <h1 class="titolo-sezione">{nome} {venduta && <span class="dettaglio__venduta">Venduta</span>}</h1>
     <div class="dettaglio__foto">

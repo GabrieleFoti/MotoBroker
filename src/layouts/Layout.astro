@@ -19,7 +19,7 @@ const { title, description, ogImage } = Astro.props;
     <meta name="description" content={description} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    {ogImage && Astro.site && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
   </head>
   <body>
     <Header />
