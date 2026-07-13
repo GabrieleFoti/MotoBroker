@@ -1,0 +1,29 @@
+---
+const passi = [
+  { n: 1, titolo: 'Contattaci', testo: 'Chiamaci o scrivici su WhatsApp: ci racconti la tua moto.' },
+  { n: 2, titolo: 'Valutazione', testo: 'Valutiamo la moto e concordiamo insieme il prezzo di vendita.' },
+  { n: 3, titolo: 'Foto e annuncio', testo: 'Realizziamo foto professionali e pubblichiamo annunci mirati.' },
+  { n: 4, titolo: 'Vendita gestita', testo: 'Gestiamo trattativa, documenti e pagamento in sicurezza. Tu incassi.' },
+];
+---
+<section class="passi">
+  <div class="contenitore">
+    <h2 class="titolo-sezione">Come funziona</h2>
+    <ol class="passi__lista">
+      {passi.map((p) => (
+        <li>
+          <span class="passi__numero">{p.n}</span>
+          <h3>{p.titolo}</h3>
+          <p>{p.testo}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+<style>
+  .passi { padding: 4rem 0; background: var(--nero-carta); }
+  .passi__lista { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 1.5rem; }
+  .passi__numero { font-family: var(--font-titoli); font-size: 2.5rem; color: var(--arancione); }
+  .passi__lista h3 { font-family: var(--font-titoli); text-transform: uppercase; font-size: 1rem; margin: 0.25rem 0; }
+  .passi__lista p { color: var(--grigio); font-size: 0.92rem; }
+</style>

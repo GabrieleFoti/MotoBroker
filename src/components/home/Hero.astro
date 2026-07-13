@@ -1,0 +1,22 @@
+---
+import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
+---
+<section class="hero">
+  <div class="contenitore hero__inner">
+    <h1 class="hero__titolo">Vendi<br />la tua moto!</h1>
+    <p class="hero__sotto">In modo sicuro, veloce e senza stress</p>
+    <p class="hero__claim">Ci occupiamo di tutto noi, <strong>tu ti godi il risultato.</strong></p>
+    <div class="hero__cta">
+      <a class="bottone" href={TELEFONO_TEL}>Chiama {TELEFONO_DISPLAY}</a>
+      <a class="bottone bottone--whatsapp" href={linkWhatsApp('Ciao! Vorrei vendere la mia moto tramite Motobroker.it')}>Scrivici su WhatsApp</a>
+    </div>
+  </div>
+</section>
+<style>
+  .hero { background: radial-gradient(ellipse at 70% 30%, #2a0d0e 0%, var(--nero) 65%); padding: 4.5rem 0; }
+  .hero__titolo { font-family: var(--font-titoli); text-transform: uppercase; color: var(--rosso); font-size: clamp(3rem, 10vw, 5.5rem); line-height: 0.95; }
+  .hero__sotto { font-family: var(--font-titoli); text-transform: uppercase; font-size: clamp(1rem, 3vw, 1.5rem); margin-top: 0.75rem; }
+  .hero__claim { color: var(--grigio); margin-top: 1rem; max-width: 32ch; }
+  .hero__claim strong { color: var(--rosso); }
+  .hero__cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+</style>

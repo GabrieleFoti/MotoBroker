@@ -1,0 +1,17 @@
+---
+import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
+---
+<section class="contatti" id="contatti">
+  <div class="contenitore">
+    <h2 class="titolo-sezione">Contattaci</h2>
+    <p class="contatti__testo">Chiama o manda un messaggio: rispondiamo tutti i giorni.</p>
+    <p class="contatti__numero"><a href={TELEFONO_TEL}>{TELEFONO_DISPLAY}</a></p>
+    <a class="bottone bottone--whatsapp" href={linkWhatsApp('Ciao! Vi contatto da Motobroker.it')}>Scrivici su WhatsApp</a>
+  </div>
+</section>
+<style>
+  .contatti { padding: 4rem 0; text-align: center; }
+  .contatti__testo { color: var(--grigio); margin-top: 0.75rem; }
+  .contatti__numero a { font-family: var(--font-titoli); font-size: clamp(2rem, 7vw, 3.2rem); color: var(--bianco); text-decoration: none; }
+  .contatti__numero { margin: 0.75rem 0 1.25rem; }
+</style>

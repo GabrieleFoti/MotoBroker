@@ -1,0 +1,31 @@
+---
+const servizi = [
+  { icona: '🔍', titolo: 'Valutazione professionale', testo: 'Valutiamo la tua moto in modo corretto e trasparente.' },
+  { icona: '📷', titolo: 'Servizio foto e annunci', testo: 'Realizziamo foto professionali e annunci mirati per la massima visibilità.' },
+  { icona: '🤝', titolo: 'Gestione trattativa', testo: 'Selezioniamo le persone seriamente interessate e gestiamo tutta la trattativa.' },
+  { icona: '🛡️', titolo: 'Vendita sicura e garantita', testo: 'Garantiamo la massima sicurezza nella vendita e nel pagamento.' },
+  { icona: '⏱️', titolo: 'Più veloci, meno pensieri', testo: 'Facciamo risparmiare tempo a tutti: a te e agli acquirenti.' },
+];
+---
+<section class="servizi" id="servizi">
+  <div class="contenitore">
+    <h2 class="titolo-sezione">I nostri servizi</h2>
+    <div class="servizi__griglia">
+      {servizi.map((s) => (
+        <div class="servizi__voce">
+          <span class="servizi__icona">{s.icona}</span>
+          <h3>{s.titolo}</h3>
+          <p>{s.testo}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+<style>
+  .servizi { padding: 4rem 0; }
+  .servizi__griglia { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+  .servizi__voce { background: var(--nero-carta); border-top: 3px solid var(--rosso); border-radius: 0 0 10px 10px; padding: 1.25rem; }
+  .servizi__icona { font-size: 1.8rem; }
+  .servizi__voce h3 { font-family: var(--font-titoli); text-transform: uppercase; color: var(--rosso); font-size: 1rem; margin: 0.5rem 0; }
+  .servizi__voce p { color: var(--grigio); font-size: 0.92rem; }
+</style>

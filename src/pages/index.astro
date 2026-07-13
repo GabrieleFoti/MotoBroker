@@ -1,6 +1,20 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import Hero from '../components/home/Hero.astro';
+import Servizi from '../components/home/Servizi.astro';
+import ComeFunziona from '../components/home/ComeFunziona.astro';
+import AnteprimaGalleria from '../components/home/AnteprimaGalleria.astro';
+import ChiSiamo from '../components/home/ChiSiamo.astro';
+import Contatti from '../components/home/Contatti.astro';
 ---
-<Layout title="Motobroker.it — Vendi la tua moto" description="Intermediazione vendita moto usate tra privati: sicura, veloce e senza stress.">
-  <h1 class="titolo-sezione contenitore">Vendi la tua moto!</h1>
+<Layout
+  title="Motobroker.it — Vendi la tua moto in modo sicuro, veloce e senza stress"
+  description="Intermediazione vendita moto usate tra privati: valutazione professionale, foto e annunci, trattativa gestita, vendita sicura e garantita."
+>
+  <Hero />
+  <Servizi />
+  <ComeFunziona />
+  <AnteprimaGalleria />
+  <ChiSiamo />
+  <Contatti />
 </Layout>
