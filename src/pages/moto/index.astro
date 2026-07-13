@@ -1,0 +1,21 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SchedaMoto from '../../components/SchedaMoto.astro';
+import { ordinaMoto } from '../../lib/moto';
+
+const moto = ordinaMoto(await getCollection('moto'));
+---
+<Layout title="Moto in vendita — Motobroker.it" description="Le moto usate attualmente in vendita tramite Motobroker.it.">
+  <section class="contenitore galleria">
+    <h1 class="titolo-sezione">Moto in vendita</h1>
+    {moto.length === 0 && <p>Nessuna moto in vendita al momento. Torna a trovarci presto!</p>}
+    <div class="galleria__griglia">
+      {moto.map((entry) => <SchedaMoto entry={entry} />)}
+    </div>
+  </section>
+</Layout>
+<style>
+  .galleria { padding-top: 2.5rem; }
+  .galleria__griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+</style>

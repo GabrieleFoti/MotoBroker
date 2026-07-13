@@ -1,0 +1,37 @@
+---
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import { fotoMoto } from '../lib/foto';
+import { formattaKm, formattaPrezzo } from '../lib/formatta';
+import { slugMoto } from '../lib/moto';
+import { url } from '../lib/url';
+
+interface Props { entry: CollectionEntry<'moto'> }
+const { entry } = Astro.props;
+const slug = slugMoto(entry);
+const copertina = fotoMoto(slug)[0];
+const { marca, modello, anno, km, prezzo, venduta } = entry.data;
+---
+<a href={url(`/moto/${slug}/`)} class:list={['scheda', { 'scheda--venduta': venduta }]}>
+  <div class="scheda__foto">
+    {copertina && <Image src={copertina} alt={`${marca} ${modello}`} width={640} widths={[320, 640]} sizes="(max-width: 640px) 100vw, 340px" />}
+    {venduta && <span class="scheda__badge">Venduta</span>}
+  </div>
+  <div class="scheda__info">
+    <h3>{marca} {modello}</h3>
+    <p class="scheda__dati">{anno}{km !== undefined && ` · ${formattaKm(km)}`}</p>
+    <p class="scheda__prezzo">{formattaPrezzo(prezzo)}</p>
+  </div>
+</a>
+<style>
+  .scheda { background: var(--nero-carta); border-radius: 10px; overflow: hidden; text-decoration: none; display: block; transition: transform 0.15s; }
+  .scheda:hover { transform: translateY(-3px); }
+  .scheda__foto { position: relative; aspect-ratio: 3 / 2; }
+  .scheda__foto img { width: 100%; height: 100%; object-fit: cover; }
+  .scheda--venduta img { filter: grayscale(0.7); opacity: 0.7; }
+  .scheda__badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--rosso); color: var(--bianco); font-family: var(--font-titoli); text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 4px; font-size: 0.85rem; }
+  .scheda__info { padding: 1rem; }
+  .scheda__info h3 { font-family: var(--font-titoli); text-transform: uppercase; font-size: 1.1rem; }
+  .scheda__dati { color: var(--grigio); font-size: 0.9rem; }
+  .scheda__prezzo { color: var(--arancione); font-weight: 700; margin-top: 0.3rem; }
+</style>
