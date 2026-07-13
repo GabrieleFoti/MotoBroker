@@ -1,0 +1,56 @@
+---
+import { Image } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
+import { fotoMoto } from '../../lib/foto';
+import { formattaKm, formattaPrezzo } from '../../lib/formatta';
+import { slugMoto } from '../../lib/moto';
+
+export async function getStaticPaths() {
+  const moto = await getCollection('moto');
+  return moto.map((entry) => ({ params: { slug: slugMoto(entry) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const slug = slugMoto(entry);
+const foto = fotoMoto(slug);
+const { marca, modello, anno, km, cilindrata, prezzo, descrizione, venduta } = entry.data;
+const nome = `${marca} ${modello}`;
+const wa = linkWhatsApp(`Ciao! Vorrei informazioni sulla ${nome} (${anno}) vista su Motobroker.it`);
+---
+<Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`}>
+  <article class="contenitore dettaglio">
+    <h1 class="titolo-sezione">{nome} {venduta && <span class="dettaglio__venduta">Venduta</span>}</h1>
+    <div class="dettaglio__foto">
+      {foto.map((f, i) => (
+        <Image src={f} alt={`${nome} — foto ${i + 1}`} width={1200} widths={[640, 1200]} sizes="(max-width: 700px) 100vw, 700px" loading={i === 0 ? 'eager' : 'lazy'} />
+      ))}
+    </div>
+    <dl class="dettaglio__dati">
+      <div><dt>Anno</dt><dd>{anno}</dd></div>
+      {km !== undefined && <div><dt>Chilometri</dt><dd>{formattaKm(km)}</dd></div>}
+      {cilindrata !== undefined && <div><dt>Cilindrata</dt><dd>{cilindrata} cc</dd></div>}
+      <div><dt>Prezzo</dt><dd class="dettaglio__prezzo">{formattaPrezzo(prezzo)}</dd></div>
+    </dl>
+    {descrizione && <p class="dettaglio__descrizione">{descrizione}</p>}
+    {!venduta && (
+      <div class="dettaglio__cta">
+        <a class="bottone bottone--whatsapp" href={wa}>Chiedi info su WhatsApp</a>
+        <a class="bottone" href={TELEFONO_TEL}>Chiama {TELEFONO_DISPLAY}</a>
+      </div>
+    )}
+  </article>
+</Layout>
+<style>
+  .dettaglio { padding-top: 2.5rem; max-width: 760px; }
+  .dettaglio__venduta { color: var(--grigio); font-size: 0.6em; vertical-align: middle; }
+  .dettaglio__foto { display: grid; gap: 0.75rem; margin: 1.5rem 0; }
+  .dettaglio__foto img { border-radius: 10px; width: 100%; height: auto; }
+  .dettaglio__dati { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; background: var(--nero-carta); padding: 1.25rem; border-radius: 10px; }
+  .dettaglio__dati dt { color: var(--grigio); font-size: 0.8rem; text-transform: uppercase; }
+  .dettaglio__dati dd { font-weight: 700; font-size: 1.1rem; }
+  .dettaglio__prezzo { color: var(--arancione); }
+  .dettaglio__descrizione { margin: 1.5rem 0; white-space: pre-line; }
+  .dettaglio__cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+</style>
