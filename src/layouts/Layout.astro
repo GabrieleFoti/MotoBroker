@@ -7,8 +7,10 @@ interface Props {
   title: string;
   description: string;
   ogImage?: string;
+  noindex?: boolean;
 }
-const { title, description, ogImage } = Astro.props;
+const { title, description, ogImage, noindex = false } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefined;
 ---
 <!doctype html>
 <html lang="it">
@@ -17,9 +19,17 @@ const { title, description, ogImage } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="MotoBroker.it" />
+    <meta property="og:locale" content="it_IT" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
     {ogImage && Astro.site && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
+    <slot name="head" />
   </head>
   <body>
     <Header />

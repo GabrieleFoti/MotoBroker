@@ -35,8 +35,32 @@ const specs: [string, string][] = [['Marca e modello', nome], ...quickSpecs];
 const altre = ordinaMoto(await getCollection('moto'))
   .filter((m) => slugMoto(m) !== slug && !m.data.venduta)
   .slice(0, 3);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Motorcycle',
+  name: nome,
+  brand: { '@type': 'Brand', name: marca },
+  model: modello,
+  vehicleModelDate: String(anno),
+  ...(km !== undefined && {
+    mileageFromOdometer: { '@type': 'QuantitativeValue', value: km, unitCode: 'KMT' },
+  }),
+  ...(descrizione && { description: descrizione }),
+  ...(foto[0] && Astro.site && { image: foto.map((f) => new URL(f.src, Astro.site).href) }),
+  ...(prezzo !== undefined && {
+    offers: {
+      '@type': 'Offer',
+      price: prezzo,
+      priceCurrency: 'EUR',
+      availability: venduta ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock',
+      seller: { '@type': 'Organization', name: 'MotoBroker.it' },
+    },
+  }),
+};
 ---
 <Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`} ogImage={foto[0]?.src}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <section class="detail-hero">
     <div class="wrap">
       <div class="breadcrumb">
