@@ -1,22 +1,88 @@
 ---
-import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
+import { Image } from 'astro:assets';
+import heroMoto from '../../assets/hero-moto.png';
+import { url } from '../../lib/url';
 ---
-<section class="hero">
-  <div class="contenitore hero__inner">
-    <h1 class="hero__titolo">Vendi<br />la tua moto!</h1>
-    <p class="hero__sotto">In modo sicuro, veloce e senza stress</p>
-    <p class="hero__claim">Ci occupiamo di tutto noi, <strong>tu ti godi il risultato.</strong></p>
-    <div class="hero__cta">
-      <a class="bottone" href={TELEFONO_TEL}>Chiama {TELEFONO_DISPLAY}</a>
-      <a class="bottone bottone--whatsapp" href={linkWhatsApp('Ciao! Vorrei vendere la mia moto tramite Motobroker.it')}>Scrivici su WhatsApp</a>
+<section class="hero" id="home">
+  <div class="wrap hero-inner">
+    <div class="hero-content">
+      <div class="eyebrow">Conto vendita moto · Firenze e dintorni</div>
+      <h1 class="display">Vendi la tua moto.<span>Al meglio.</span></h1>
+      <p>
+        Valutazione professionale, foto e annunci di qualità, selezione degli acquirenti e gestione
+        completa della trattativa. Tu ci affidi la moto, noi pensiamo al resto.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href={url('/moto/')}>Guarda le moto</a>
+        <a class="btn btn-ghost" href="#contatti">Richiedi una valutazione</a>
+      </div>
+      <div class="trust">
+        <span>Trattativa gestita</span>
+        <span>Pagamento sicuro</span>
+        <span>Zero perditempo</span>
+      </div>
+    </div>
+    <div class="hero-foto">
+      <Image src={heroMoto} alt="" width={800} widths={[480, 800]} sizes="(max-width: 980px) 90vw, 520px" loading="eager" fetchpriority="high" />
     </div>
   </div>
 </section>
 <style>
-  .hero { background: radial-gradient(ellipse at 70% 30%, #2a0d0e 0%, var(--nero) 65%); padding: 4.5rem 0; }
-  .hero__titolo { font-family: var(--font-titoli); text-transform: uppercase; color: var(--rosso); font-size: clamp(3rem, 10vw, 5.5rem); line-height: 0.95; }
-  .hero__sotto { font-family: var(--font-titoli); text-transform: uppercase; font-size: clamp(1rem, 3vw, 1.5rem); margin-top: 0.75rem; }
-  .hero__claim { color: var(--grigio); margin-top: 1rem; max-width: 32ch; }
-  .hero__claim strong { color: var(--rosso); }
-  .hero__cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 2rem; }
+  .hero {
+    min-height: 720px;
+    padding: 145px 0 90px;
+    display: flex;
+    align-items: center;
+    background:
+      linear-gradient(90deg, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.72) 45%, rgba(0, 0, 0, 0.12) 75%),
+      #0a0a0a;
+    position: relative;
+  }
+  .hero:after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(120deg, transparent 0 48px, rgba(255, 255, 255, 0.012) 49px 50px);
+    pointer-events: none;
+  }
+  .hero-inner {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 690px) minmax(0, 1fr);
+    gap: 30px;
+    align-items: center;
+  }
+  .hero-foto img {
+    width: 100%;
+    height: auto;
+    max-height: 620px;
+    object-fit: contain;
+    filter: drop-shadow(0 30px 60px rgba(0, 0, 0, 0.6));
+    mask-image: radial-gradient(ellipse 62% 62% at center, #000 55%, transparent 98%);
+  }
+  .hero h1 { font-size: clamp(4.4rem, 8vw, 7.8rem); line-height: 0.85; margin: 18px 0 28px; }
+  .hero h1 span { display: block; color: var(--rosso); }
+  .hero p { font-size: 1.14rem; color: #c7c7c7; max-width: 620px; }
+  .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
+  .trust { display: flex; gap: 24px; flex-wrap: wrap; margin-top: 34px; color: #ccc; font-size: 0.88rem; }
+  .trust span:before {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--rosso);
+    border-radius: 50%;
+    margin-right: 9px;
+    box-shadow: 0 0 14px var(--rosso);
+  }
+  @media (max-width: 980px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-foto { order: -1; display: flex; justify-content: center; }
+    .hero-foto img { max-height: 380px; }
+  }
+  @media (max-width: 650px) {
+    .hero { padding: 110px 0 70px; min-height: auto; }
+    .hero h1 { font-size: 4.15rem; }
+  }
 </style>

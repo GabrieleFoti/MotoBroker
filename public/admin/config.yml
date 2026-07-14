@@ -1,0 +1,54 @@
+# Configurazione Decap CMS — pannello admin moto.
+# TODO prima del primo uso online:
+#   1. sostituire "TUO-UTENTE/MotoBroker" con owner/repo reali
+#   2. configurare base_url dell'OAuth proxy (vedi docs/admin.md)
+backend:
+  name: github
+  repo: TUO-UTENTE/MotoBroker
+  branch: main
+  # base_url: https://TUO-OAUTH-PROXY.workers.dev
+
+# Per provare in locale senza OAuth: `npx decap-server` in un terminale
+# e `npm run dev` in un altro, poi apri http://localhost:4321/admin/
+local_backend: true
+
+media_folder: moto
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: '-'
+
+collections:
+  - name: moto
+    label: Moto
+    label_singular: Moto
+    folder: moto
+    create: true
+    delete: true
+    format: yaml
+    extension: yaml
+    path: '{{slug}}/info'
+    media_folder: ''
+    public_folder: ''
+    identifier_field: modello
+    slug: '{{fields.marca}}-{{fields.modello}}'
+    summary: '{{marca}} {{modello}} ({{anno}})'
+    sortable_fields: [marca, anno, prezzo]
+    fields:
+      - { name: marca, label: Marca, widget: string }
+      - { name: modello, label: Modello, widget: string }
+      - { name: anno, label: Anno, widget: number, value_type: int }
+      - { name: km, label: Chilometri, widget: number, value_type: int, required: false }
+      - { name: cilindrata, label: 'Cilindrata (cc)', widget: number, value_type: int, required: false }
+      - { name: prezzo, label: 'Prezzo (€)', widget: number, value_type: int, required: false, hint: 'Vuoto = "Prezzo su richiesta"' }
+      - { name: descrizione, label: Descrizione, widget: text, required: false }
+      - { name: venduta, label: Venduta, widget: boolean, default: false }
+      - name: copertina
+        label: Foto
+        widget: image
+        required: false
+        hint: >-
+          Le foto caricate qui finiscono nella cartella della moto e compaiono
+          tutte nella scheda, in ordine alfabetico di nome file (01.jpg, 02.jpg, ...).
+          La prima è la copertina.

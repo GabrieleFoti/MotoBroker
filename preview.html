@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MotoBroker.it — Anteprima schede moto</title>
+<meta name="description" content="Anteprima interattiva del catalogo MotoBroker.it con schede dettagliate delle moto.">
+<style>
+:root{
+  --bg:#070707;--panel:#101010;--panel2:#151515;--red:#e10600;--red2:#ff2b21;
+  --orange:#f16a32;--white:#f5f5f5;--muted:#a4a4a4;--line:#292929;
+  --radius:22px;--shadow:0 24px 80px rgba(0,0,0,.52)
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--white);font-family:Inter,Arial,sans-serif;line-height:1.5;overflow-x:hidden}
+button,input,textarea,select{font:inherit}button,a{touch-action:manipulation}
+a{color:inherit;text-decoration:none}.wrap{width:min(1200px,calc(100% - 40px));margin:auto}
+.display{font-family:"Arial Narrow",Impact,sans-serif;text-transform:uppercase;letter-spacing:-.035em;font-weight:900}
+.eyebrow{color:var(--orange);text-transform:uppercase;letter-spacing:.18em;font-size:.76rem;font-weight:900}
+.btn{border:0;border-radius:999px;padding:15px 22px;font-weight:900;display:inline-flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;transition:.22s}
+.btn-primary{background:linear-gradient(135deg,var(--red),var(--red2));color:#fff;box-shadow:0 14px 34px rgba(225,6,0,.28)}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 19px 42px rgba(225,6,0,.38)}
+.btn-ghost{background:#151515;border:1px solid #373737;color:#fff}.btn-ghost:hover{border-color:#777}
+header{position:fixed;z-index:50;inset:0 0 auto;background:rgba(7,7,7,.83);backdrop-filter:blur(18px);border-bottom:1px solid rgba(255,255,255,.07)}
+nav{height:78px;display:flex;align-items:center;gap:30px}.brand{font-family:"Arial Narrow",Impact,sans-serif;font-size:2rem;font-weight:900;line-height:.8;margin-right:auto}.brand small{display:block;font-size:.8rem;color:var(--orange);letter-spacing:.08em}
+.navlinks{display:flex;gap:24px;color:#d5d5d5;font-size:.9rem}.navlinks a:hover{color:#fff}
+.hero{min-height:720px;padding:145px 0 90px;background:
+ radial-gradient(circle at 78% 42%,rgba(225,6,0,.27),transparent 27%),
+ linear-gradient(90deg,rgba(0,0,0,.95) 0%,rgba(0,0,0,.72) 45%,rgba(0,0,0,.12) 75%),
+ url("assets/brand-hero.jpg") 76% 47%/cover no-repeat;position:relative}
+.hero:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent 0 48px,rgba(255,255,255,.012) 49px 50px);pointer-events:none}
+.hero-content{position:relative;z-index:2;max-width:690px}.hero h1{font-size:clamp(4.4rem,8vw,7.8rem);line-height:.79;margin:18px 0 28px}.hero h1 span{display:block;color:var(--red)}
+.hero p{font-size:1.14rem;color:#c7c7c7;max-width:620px}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+.trust{display:flex;gap:24px;flex-wrap:wrap;margin-top:34px;color:#ccc;font-size:.88rem}.trust span:before{content:"";display:inline-block;width:8px;height:8px;background:var(--red);border-radius:50%;margin-right:9px;box-shadow:0 0 14px var(--red)}
+.section{padding:100px 0}.section.dark{background:#0c0c0c;border-block:1px solid #1e1e1e}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:40px;margin-bottom:38px}.section h2{font-size:clamp(3rem,5vw,5.1rem);line-height:.88;margin:10px 0 0}.section-head p{max-width:530px;color:#aaa}
+.filters{display:flex;gap:10px;flex-wrap:wrap}.filter{background:#151515;border:1px solid #333;color:#bbb;border-radius:999px;padding:10px 15px;cursor:pointer}.filter.active{background:var(--red);border-color:var(--red);color:#fff}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.moto-card{background:#121212;border:1px solid #272727;border-radius:24px;overflow:hidden;cursor:pointer;transition:.25s;position:relative}
+.moto-card:hover{transform:translateY(-6px);border-color:#505050;box-shadow:0 25px 55px rgba(0,0,0,.35)}
+.moto-card:focus-visible{outline:3px solid var(--orange);outline-offset:4px}.card-img{height:265px;position:relative;background:#161616;overflow:hidden}.card-img img{width:100%;height:100%;object-fit:cover;transition:.5s}.moto-card:hover img{transform:scale(1.035)}
+.badge{position:absolute;top:16px;left:16px;border-radius:999px;padding:7px 10px;background:rgba(0,0,0,.82);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.14);font-size:.7rem;font-weight:900;text-transform:uppercase}
+.badge.red{background:rgba(225,6,0,.94)}.card-body{padding:22px}.card-body h3{font-size:1.8rem;margin:0;font-family:"Arial Narrow",Impact,sans-serif;text-transform:uppercase}.spec-row{display:flex;gap:13px;flex-wrap:wrap;color:#969696;font-size:.82rem;margin:10px 0 20px}
+.card-foot{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #2b2b2b;padding-top:17px}.price{font-family:"Arial Narrow",Impact,sans-serif;font-weight:900;font-size:1.8rem}.open-link{color:var(--orange);font-weight:900;font-size:.85rem}
+.demo-note{margin-top:25px;color:#777;font-size:.82rem}
+
+/* DETAIL VIEW */
+#detailView{display:none;padding-top:78px}.detail-hero{padding:34px 0 28px;background:linear-gradient(180deg,#0d0d0d,#080808);border-bottom:1px solid #222}
+.breadcrumb{color:#898989;font-size:.85rem;margin-bottom:24px}.breadcrumb button{background:none;border:0;color:#cfcfcf;padding:0;cursor:pointer}.breadcrumb button:hover{color:#fff}
+.detail-top{display:grid;grid-template-columns:1.25fr .75fr;gap:34px;align-items:start}
+.gallery-main{height:590px;border-radius:28px;overflow:hidden;border:1px solid #2d2d2d;background:#111;position:relative}.gallery-main img{width:100%;height:100%;object-fit:cover}
+.gallery-status{position:absolute;left:20px;top:20px}.thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:12px}.thumb{height:104px;border:2px solid transparent;border-radius:14px;overflow:hidden;background:#111;cursor:pointer;padding:0}.thumb.active{border-color:var(--red)}.thumb img{width:100%;height:100%;object-fit:cover}
+.detail-summary{position:sticky;top:104px;background:linear-gradient(155deg,#171717,#0e0e0e);border:1px solid #2a2a2a;border-radius:28px;padding:30px;box-shadow:var(--shadow)}
+.detail-summary h1{font-size:clamp(3rem,5vw,5.6rem);line-height:.82;margin:10px 0 14px}.detail-summary .subtitle{color:#aaa;margin:0 0 25px}.detail-price{font-family:"Arial Narrow",Impact,sans-serif;font-size:3rem;font-weight:900;margin:12px 0 20px}.summary-actions{display:grid;gap:11px}.summary-actions .btn{width:100%}
+.quick-specs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:25px 0}.quick-spec{border:1px solid #2b2b2b;border-radius:15px;padding:14px;background:#121212}.quick-spec small{display:block;color:#777;text-transform:uppercase;font-size:.66rem;letter-spacing:.12em}.quick-spec b{display:block;margin-top:4px}
+.safe-box{border-top:1px solid #2b2b2b;margin-top:24px;padding-top:20px;color:#aaa;font-size:.86rem}.safe-box strong{color:#fff;display:block;margin-bottom:4px}
+.detail-content{padding:70px 0 100px}.detail-layout{display:grid;grid-template-columns:1fr 370px;gap:42px}
+.content-card{border:1px solid #292929;border-radius:24px;background:#101010;padding:30px;margin-bottom:22px}.content-card h2{font-size:2.25rem;margin:0 0 18px;font-family:"Arial Narrow",Impact,sans-serif;text-transform:uppercase}.content-card p{color:#b2b2b2}
+.spec-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.spec{border:1px solid #292929;border-radius:14px;padding:14px;background:#141414}.spec span{display:block;color:#777;text-transform:uppercase;font-size:.66rem;letter-spacing:.1em}.spec b{display:block;margin-top:5px}
+.features{display:grid;grid-template-columns:1fr 1fr;gap:10px 20px;padding:0;list-style:none}.features li{color:#bcbcbc}.features li:before{content:"✓";color:var(--red);font-weight:900;margin-right:9px}
+.side-card{border:1px solid #292929;border-radius:22px;background:#111;padding:24px;margin-bottom:18px}.side-card h3{font-family:"Arial Narrow",Impact,sans-serif;text-transform:uppercase;font-size:1.7rem;margin:0 0 8px}.side-card p{color:#999;font-size:.9rem}.side-card .icon{font-size:1.6rem;color:var(--red);margin-bottom:10px}
+.form-card{position:sticky;top:104px}.form-card input,.form-card textarea{width:100%;background:#181818;border:1px solid #343434;border-radius:12px;color:#fff;padding:13px;margin:6px 0 11px}.form-card textarea{min-height:115px;resize:vertical}.form-card label{font-size:.78rem;color:#aaa}.form-card .btn{width:100%;margin-top:6px}
+.related{padding-top:30px}.back-floating{position:fixed;z-index:65;left:18px;bottom:18px;background:#171717;border:1px solid #3a3a3a;color:#fff;padding:12px 17px;border-radius:999px;cursor:pointer;box-shadow:0 16px 40px rgba(0,0,0,.35);display:none}
+.whatsapp{position:fixed;z-index:60;right:18px;bottom:18px;width:58px;height:58px;border-radius:50%;background:#20c563;color:#fff;display:grid;place-items:center;font-size:1.45rem;font-weight:900;box-shadow:0 16px 38px rgba(0,0,0,.42)}
+footer{padding:50px 0 28px;border-top:1px solid #222;background:#090909}.footer-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:35px}.footer-brand{font-family:"Arial Narrow",Impact,sans-serif;font-size:2.8rem;font-weight:900}.footer-brand span{color:var(--orange)}footer h4{text-transform:uppercase;color:#777;font-size:.78rem;letter-spacing:.15em}footer p,footer a{color:#aaa;font-size:.9rem}.bottom{border-top:1px solid #222;margin-top:32px;padding-top:20px;color:#666;font-size:.78rem;display:flex;justify-content:space-between}
+.toast{position:fixed;left:50%;bottom:24px;z-index:90;transform:translate(-50%,130px);background:#fff;color:#111;padding:13px 18px;border-radius:999px;font-weight:800;transition:.3s}.toast.show{transform:translate(-50%,0)}
+
+@media(max-width:980px){
+ .navlinks{display:none}.detail-top,.detail-layout{grid-template-columns:1fr}.detail-summary,.form-card{position:static}.gallery-main{height:500px}.grid{grid-template-columns:repeat(2,1fr)}.hero{background-position:67% center}
+}
+@media(max-width:650px){
+ .wrap{width:min(100% - 24px,1200px)}nav{height:68px}.nav-cta{display:none}.hero{padding:120px 0 70px;min-height:710px;background-position:62% center}.hero:before{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.18),rgba(0,0,0,.98) 80%)}.hero-content{padding-top:220px}.hero h1{font-size:4.15rem}.section{padding:75px 0}.section-head{display:block}.grid{grid-template-columns:1fr}.card-img{height:245px}.gallery-main{height:410px;border-radius:20px}.thumbs{grid-template-columns:repeat(4,1fr);gap:7px}.thumb{height:72px}.detail-summary{padding:23px}.detail-summary h1{font-size:3.3rem}.detail-layout{gap:20px}.spec-grid{grid-template-columns:1fr 1fr}.features{grid-template-columns:1fr}.content-card{padding:22px}.footer-grid{grid-template-columns:1fr}.bottom{display:block}.bottom span{display:block;margin-top:7px}.back-floating{bottom:86px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <a class="brand" href="#home" id="brandLink">MOTO<small>BROKER.IT</small></a>
+      <div class="navlinks">
+        <a href="#moto">Moto disponibili</a><a href="#servizi">Servizi</a><a href="#contatti">Contatti</a>
+      </div>
+      <a class="btn btn-primary nav-cta" href="https://wa.me/393286119960?text=Ciao%20MotoBroker.it,%20vorrei%20una%20valutazione%20della%20mia%20moto">Valuta la tua moto</a>
+    </nav>
+  </div>
+</header>
+
+<div id="homeView">
+<main>
+<section class="hero" id="home">
+  <div class="wrap hero-content">
+    <div class="eyebrow">Conto vendita moto · Firenze e dintorni</div>
+    <h1 class="display">Vendi la tua moto.<span>Al meglio.</span></h1>
+    <p>Valutazione professionale, foto e annunci di qualità, selezione degli acquirenti e gestione completa della trattativa. Tu ci affidi la moto, noi pensiamo al resto.</p>
+    <div class="hero-actions"><a class="btn btn-primary" href="#moto">Guarda le moto</a><a class="btn btn-ghost" href="#contatti">Richiedi una valutazione</a></div>
+    <div class="trust"><span>Trattativa gestita</span><span>Pagamento sicuro</span><span>Zero perditempo</span></div>
+  </div>
+</section>
+
+<section class="section dark" id="moto">
+  <div class="wrap">
+    <div class="section-head">
+      <div><div class="eyebrow">Catalogo dimostrativo</div><h2 class="display">Moto disponibili</h2></div>
+      <div class="filters"><button class="filter active" data-filter="all">Tutte</button><button class="filter" data-filter="sportiva">Sportive</button><button class="filter" data-filter="naked">Naked</button><button class="filter" data-filter="touring">Touring</button></div>
+    </div>
+    <div class="grid" id="motoGrid"></div>
+    <p class="demo-note">Le moto, i prezzi e i dati mostrati sono dimostrativi. Clicca su una moto per aprire la scheda completa.</p>
+  </div>
+</section>
+
+<section class="section" id="servizi">
+ <div class="wrap">
+  <div class="section-head"><div><div class="eyebrow">Il nostro metodo</div><h2 class="display">Ci occupiamo di tutto noi</h2></div><p>Valutiamo la moto, realizziamo foto e annunci, selezioniamo le persone seriamente interessate e gestiamo la trattativa fino alla vendita.</p></div>
+  <div class="grid">
+   <article class="moto-card" style="cursor:default"><div class="card-body"><div class="eyebrow">01</div><h3>Valutazione professionale</h3><p style="color:#999">Analizziamo condizioni, mercato e posizionamento corretto della moto.</p></div></article>
+   <article class="moto-card" style="cursor:default"><div class="card-body"><div class="eyebrow">02</div><h3>Foto e annunci</h3><p style="color:#999">Presentazione curata e pubblicazione degli annunci sui canali più adatti.</p></div></article>
+   <article class="moto-card" style="cursor:default"><div class="card-body"><div class="eyebrow">03</div><h3>Trattativa gestita</h3><p style="color:#999">Gestiamo richieste, appuntamenti, trattativa, pagamento e consegna.</p></div></article>
+  </div>
+ </div>
+</section>
+
+<section class="section dark" id="contatti">
+ <div class="wrap">
+  <div style="padding:60px;border-radius:30px;background:linear-gradient(135deg,#ad0500,#ef1e16);position:relative;overflow:hidden">
+   <div class="eyebrow" style="color:#fff">Prima valutazione senza impegno</div>
+   <h2 class="display" style="max-width:750px;margin:12px 0 18px">La tua moto merita il miglior risultato.</h2>
+   <p style="max-width:600px">Mandaci marca, modello, anno, chilometri e alcune fotografie. Ti ricontatteremo per valutare il percorso più adatto.</p>
+   <a class="btn" style="background:#fff;color:#111;margin-top:15px" href="https://wa.me/393286119960?text=Ciao%20MotoBroker.it,%20vorrei%20una%20valutazione%20della%20mia%20moto">Scrivici su WhatsApp · 328 611 9960</a>
+  </div>
+ </div>
+</section>
+</main>
+</div>
+
+<div id="detailView">
+ <section class="detail-hero">
+  <div class="wrap">
+   <div class="breadcrumb"><button id="backTop">Home</button> / Moto disponibili / <span id="crumbName"></span></div>
+   <div class="detail-top">
+    <div>
+      <div class="gallery-main"><img id="mainImage" alt=""><span class="badge red gallery-status" id="detailStatus"></span></div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+    <aside class="detail-summary">
+      <div class="eyebrow" id="detailCategory"></div>
+      <h1 class="display" id="detailName"></h1>
+      <p class="subtitle" id="detailSubtitle"></p>
+      <div class="detail-price" id="detailPrice"></div>
+      <div class="quick-specs" id="quickSpecs"></div>
+      <div class="summary-actions">
+       <a class="btn btn-primary" id="detailWhatsApp" target="_blank" rel="noopener">Richiedi informazioni</a>
+       <button class="btn btn-ghost" id="callButton">Chiama 328 611 9960</button>
+      </div>
+      <div class="safe-box"><strong>Vendita seguita da MotoBroker.it</strong>Gestiamo richieste, selezione degli interessati, trattativa e passaggi operativi fino alla consegna.</div>
+    </aside>
+   </div>
+  </div>
+ </section>
+
+ <section class="detail-content">
+  <div class="wrap detail-layout">
+   <div>
+    <article class="content-card"><h2>Descrizione</h2><p id="detailDescription"></p></article>
+    <article class="content-card"><h2>Dati tecnici</h2><div class="spec-grid" id="specGrid"></div></article>
+    <article class="content-card"><h2>Dotazioni e condizioni</h2><ul class="features" id="featureList"></ul></article>
+    <div class="related"><div class="eyebrow">Potrebbero interessarti</div><h2 class="display" style="font-size:3.4rem;margin:8px 0 25px">Altre moto disponibili</h2><div class="grid" id="relatedGrid"></div></div>
+   </div>
+   <aside>
+    <div class="side-card"><div class="icon">◉</div><h3>Finanziamento</h3><p>Possibilità di valutare soluzioni di finanziamento tramite partner, soggette ad approvazione.</p></div>
+    <div class="side-card"><div class="icon">↗</div><h3>Trasporto</h3><p>Organizziamo il trasporto della moto su richiesta, con modalità e costi definiti prima della conferma.</p></div>
+    <form class="side-card form-card" id="infoForm">
+      <div class="eyebrow">Contattaci</div><h3>Richiedi informazioni</h3>
+      <label>Nome e cognome<input required name="name" placeholder="Il tuo nome"></label>
+      <label>Telefono<input required name="phone" placeholder="+39 ..."></label>
+      <label>Email<input type="email" name="email" placeholder="nome@email.it"></label>
+      <label>Messaggio<textarea name="message" id="formMessage"></textarea></label>
+      <button class="btn btn-primary" type="submit">Invia richiesta demo</button>
+      <p style="color:#777;font-size:.75rem">Nell’anteprima l’invio è simulato: il modulo definitivo sarà collegato a email o CRM.</p>
+    </form>
+   </aside>
+  </div>
+ </section>
+</div>
+
+<footer>
+ <div class="wrap">
+  <div class="footer-grid">
+   <div><div class="footer-brand">MOTO<span>BROKER.IT</span></div><p>Conto vendita e intermediazione moto a Firenze e dintorni.</p></div>
+   <div><h4>Contatti</h4><p><a href="tel:+393286119960">328 611 9960</a></p><p>info@motobroker.it</p></div>
+   <div><h4>Servizi</h4><p>Valutazione</p><p>Foto e annunci</p><p>Gestione trattativa</p></div>
+  </div>
+  <div class="bottom"><span>© 2026 MotoBroker.it</span><span>Anteprima grafica · Dati dimostrativi</span></div>
+ </div>
+</footer>
+
+<button class="back-floating" id="backFloating">← Torna alle moto</button>
+<a class="whatsapp" href="https://wa.me/393286119960" aria-label="Apri WhatsApp">W</a>
+<div class="toast" id="toast">Richiesta dimostrativa registrata</div>
+
+<script>
+const motos=[
+ {id:"panigale-v4",name:"Ducati Panigale V4",subtitle:"Superbike · Versione S · Rosso",category:"Sportiva",filter:"sportiva",status:"Disponibile",price:"€ 24.900",year:"2023",km:"4.200 km",cc:"1.103 cc",power:"158 kW",license:"A",owners:"1",fuel:"Benzina",gearbox:"6 marce",color:"Rosso",revision:"06/2027",service:"Tagliando documentato",tires:"80%",keys:"2",images:["assets/moto-main.jpg","assets/moto-front.jpg","assets/moto-side.jpg","assets/moto-detail.jpg","assets/moto-wheel.jpg"],description:"Esemplare dimostrativo presentato con una scheda pensata per valorizzare la moto in modo professionale. La pagina raccoglie fotografie, dati tecnici, condizioni, dotazioni e tutti i riferimenti necessari per contattare MotoBroker.it senza passaggi inutili.",features:["Condizioni estetiche curate","Storico manutenzione disponibile","Doppie chiavi","Pneumatici in buono stato","Possibilità di finanziamento","Trasporto organizzabile","Trattativa gestita da MotoBroker.it","Annuncio fotografico professionale"]},
+ {id:"mt09-sp",name:"Yamaha MT-09 SP",subtitle:"Hyper Naked · Allestimento SP",category:"Naked",filter:"naked",status:"Riservata",price:"€ 11.500",year:"2022",km:"7.600 km",cc:"890 cc",power:"87,5 kW",license:"A",owners:"1",fuel:"Benzina",gearbox:"6 marce",color:"Nero / Blu",revision:"09/2026",service:"Regolare",tires:"70%",keys:"2",images:["assets/moto-side.jpg","assets/moto-detail.jpg","assets/moto-main.jpg","assets/moto-wheel.jpg"],description:"Una naked sportiva proposta attraverso una presentazione chiara e completa. Lo stato Riservata è immediatamente visibile, ma la scheda resta utile per mostrare come appariranno le moto prenotate o in trattativa.",features:["Versione SP","Sospensioni sportive","Cambio elettronico","Doppie chiavi","Manutenzione regolare","Finanziamento su richiesta","Trasporto disponibile","Gestione completa della trattativa"]},
+ {id:"r1250-gs",name:"BMW R 1250 GS",subtitle:"Adventure Touring · Full optional",category:"Touring",filter:"touring",status:"Disponibile",price:"€ 18.700",year:"2021",km:"19.800 km",cc:"1.254 cc",power:"100 kW",license:"A",owners:"2",fuel:"Benzina",gearbox:"6 marce",color:"Nero",revision:"03/2027",service:"Documentato",tires:"65%",keys:"2",images:["assets/moto-front.jpg","assets/moto-main.jpg","assets/moto-wheel.jpg","assets/moto-detail.jpg"],description:"Scheda dimostrativa per una moto touring: informazioni essenziali subito visibili, galleria fotografica, descrizione, dotazioni e servizi collegati. La struttura si adatta automaticamente anche a telefoni e tablet.",features:["Pacchetto touring","Manopole riscaldate","Borse laterali","Navigazione predisposta","Storico documentato","Finanziamento disponibile","Trasporto su richiesta","Assistenza fino alla consegna"]},
+ {id:"monster-937",name:"Ducati Monster 937",subtitle:"Naked · Rosso",category:"Naked",filter:"naked",status:"In arrivo",price:"€ 10.900",year:"2022",km:"8.500 km",cc:"937 cc",power:"82 kW",license:"A",owners:"1",fuel:"Benzina",gearbox:"6 marce",color:"Rosso",revision:"11/2026",service:"Da verificare",tires:"75%",keys:"2",images:["assets/moto-detail.jpg","assets/moto-side.jpg","assets/moto-main.jpg","assets/moto-front.jpg"],description:"Esempio di moto in arrivo, già pubblicabile per raccogliere manifestazioni di interesse. I dati possono essere completati progressivamente dal pannello amministrativo.",features:["Annuncio in anteprima","Contatti già raccoglibili","Foto aggiornabili","Prezzo modificabile","Stato In arrivo","Trasporto disponibile","Finanziamento su richiesta","Scheda condivisibile"]},
+ {id:"street-triple",name:"Triumph Street Triple RS",subtitle:"Roadster sportiva · RS",category:"Naked",filter:"naked",status:"Disponibile",price:"€ 12.800",year:"2023",km:"5.900 km",cc:"765 cc",power:"95 kW",license:"A",owners:"1",fuel:"Benzina",gearbox:"6 marce",color:"Grigio",revision:"05/2027",service:"Documentato",tires:"85%",keys:"2",images:["assets/moto-wheel.jpg","assets/moto-main.jpg","assets/moto-side.jpg","assets/moto-front.jpg"],description:"Un’altra scheda dimostrativa che mostra quanto facilmente il catalogo possa contenere modelli e categorie differenti mantenendo la stessa identità visiva.",features:["Allestimento RS","Quickshifter","Sospensioni regolabili","Doppie chiavi","Tagliando documentato","Vendita assistita","Finanziamento","Trasporto"]},
+ {id:"africa-twin",name:"Honda Africa Twin",subtitle:"Adventure · DCT",category:"Touring",filter:"touring",status:"Venduta",price:"€ 15.600",year:"2020",km:"24.500 km",cc:"1.084 cc",power:"75 kW",license:"A",owners:"2",fuel:"Benzina",gearbox:"DCT",color:"Tricolore",revision:"01/2027",service:"Regolare",tires:"60%",keys:"2",images:["assets/moto-main.jpg","assets/moto-wheel.jpg","assets/moto-front.jpg","assets/moto-side.jpg"],description:"Esempio di scheda Venduta. Può restare online come prova del catalogo storico oppure essere nascosta dal pannello, in base alla strategia scelta.",features:["Cambio DCT","Accessori touring","Storico manutenzione","Moto venduta","Scheda archivio","Contatti per modelli simili","Ricerca moto su richiesta","Assistenza MotoBroker.it"]}
+];
+
+let currentFilter="all";
+const homeView=document.getElementById("homeView"),detailView=document.getElementById("detailView"),footer=document.querySelector("footer");
+const grid=document.getElementById("motoGrid");
+
+function card(m,related=false){
+ const badgeClass=m.status==="Disponibile"?"":"red";
+ return `<article class="moto-card" tabindex="0" role="button" aria-label="Apri la scheda di ${m.name}" data-id="${m.id}">
+  <div class="card-img"><img src="${m.images[0]}" alt="${m.name}"><span class="badge ${badgeClass}">${m.status}</span></div>
+  <div class="card-body"><h3>${m.name}</h3><div class="spec-row"><span>${m.year}</span><span>${m.km}</span><span>${m.category}</span></div>
+  <div class="card-foot"><strong class="price">${m.price}</strong><span class="open-link">Vedi scheda →</span></div></div></article>`
+}
+function bindCards(root=document){
+ root.querySelectorAll(".moto-card[data-id]").forEach(el=>{
+  const open=()=>openMoto(el.dataset.id);
+  el.onclick=open;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}};
+ });
+}
+function renderGrid(){
+ const shown=motos.filter(m=>currentFilter==="all"||m.filter===currentFilter);
+ grid.innerHTML=shown.map(m=>card(m)).join("");bindCards(grid);
+}
+document.querySelectorAll(".filter").forEach(btn=>btn.onclick=()=>{
+ document.querySelectorAll(".filter").forEach(x=>x.classList.remove("active"));btn.classList.add("active");
+ currentFilter=btn.dataset.filter;renderGrid();
+});
+
+function openMoto(id,push=true){
+ const m=motos.find(x=>x.id===id);if(!m)return;
+ homeView.style.display="none";detailView.style.display="block";document.getElementById("backFloating").style.display="block";
+ document.getElementById("crumbName").textContent=m.name;
+ document.getElementById("detailStatus").textContent=m.status;
+ document.getElementById("detailCategory").textContent=m.category+" · Moto in conto vendita";
+ document.getElementById("detailName").textContent=m.name;
+ document.getElementById("detailSubtitle").textContent=m.subtitle;
+ document.getElementById("detailPrice").textContent=m.price;
+ document.getElementById("detailDescription").textContent=m.description;
+ document.getElementById("mainImage").src=m.images[0];document.getElementById("mainImage").alt=m.name;
+ document.getElementById("quickSpecs").innerHTML=[
+  ["Anno",m.year],["Chilometri",m.km],["Cilindrata",m.cc],["Potenza",m.power]
+ ].map(([a,b])=>`<div class="quick-spec"><small>${a}</small><b>${b}</b></div>`).join("");
+ const specs=[["Marca e modello",m.name],["Anno",m.year],["Chilometri",m.km],["Cilindrata",m.cc],["Potenza",m.power],["Patente",m.license],["Alimentazione",m.fuel],["Cambio",m.gearbox],["Colore",m.color],["Proprietari",m.owners],["Ultimo tagliando",m.service],["Revisione",m.revision],["Pneumatici",m.tires],["Chiavi",m.keys],["Stato",m.status]];
+ document.getElementById("specGrid").innerHTML=specs.map(([a,b])=>`<div class="spec"><span>${a}</span><b>${b}</b></div>`).join("");
+ document.getElementById("featureList").innerHTML=m.features.map(x=>`<li>${x}</li>`).join("");
+ const thumbs=document.getElementById("thumbs");
+ thumbs.innerHTML=m.images.slice(0,4).map((im,i)=>`<button class="thumb ${i===0?"active":""}" data-src="${im}" aria-label="Mostra foto ${i+1}"><img src="${im}" alt=""></button>`).join("");
+ thumbs.querySelectorAll(".thumb").forEach(t=>t.onclick=()=>{document.getElementById("mainImage").src=t.dataset.src;thumbs.querySelectorAll(".thumb").forEach(x=>x.classList.remove("active"));t.classList.add("active")});
+ const msg=encodeURIComponent(`Ciao MotoBroker.it, vorrei informazioni sulla ${m.name} (${m.year}) pubblicata a ${m.price}.`);
+ document.getElementById("detailWhatsApp").href=`https://wa.me/393286119960?text=${msg}`;
+ document.getElementById("formMessage").value=`Vorrei ricevere informazioni sulla ${m.name} (${m.year}).`;
+ const related=motos.filter(x=>x.id!==m.id&&x.status!=="Venduta").slice(0,3);
+ const rg=document.getElementById("relatedGrid");rg.innerHTML=related.map(x=>card(x,true)).join("");bindCards(rg);
+ if(push) history.pushState({moto:id},"","#moto/"+id);
+ window.scrollTo({top:0,behavior:"instant"});
+}
+function closeDetail(push=true){
+ detailView.style.display="none";homeView.style.display="block";document.getElementById("backFloating").style.display="none";
+ if(push) history.pushState({},"","#moto");
+ setTimeout(()=>document.getElementById("moto").scrollIntoView(),0);
+}
+document.getElementById("backTop").onclick=()=>closeDetail();
+document.getElementById("backFloating").onclick=()=>closeDetail();
+document.getElementById("brandLink").onclick=e=>{if(detailView.style.display==="block"){e.preventDefault();closeDetail();window.scrollTo(0,0)}};
+document.getElementById("callButton").onclick=()=>location.href="tel:+393286119960";
+document.getElementById("infoForm").onsubmit=e=>{e.preventDefault();const t=document.getElementById("toast");t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600)};
+window.onpopstate=()=>route(false);
+function route(){
+ const match=location.hash.match(/^#moto\/(.+)$/);if(match)openMoto(match[1],false);else if(detailView.style.display==="block")closeDetail(false);
+}
+renderGrid();route();
+</script>
+</body>
+</html>

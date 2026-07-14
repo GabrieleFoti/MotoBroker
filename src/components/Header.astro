@@ -1,22 +1,47 @@
 ---
+import { linkWhatsApp } from '../lib/contatti';
 import { url } from '../lib/url';
+
+const wa = linkWhatsApp('Ciao MotoBroker.it, vorrei una valutazione della mia moto');
 ---
 <header class="header">
-  <div class="contenitore header__riga">
-    <a href={url('/')} class="header__logo">MOTO<span>BROKER.IT</span></a>
-    <nav class="header__nav">
-      <a href={url('/#servizi')}>Servizi</a>
-      <a href={url('/moto/')}>Moto in vendita</a>
-      <a href={url('/#contatti')}>Contatti</a>
+  <div class="wrap">
+    <nav class="nav">
+      <a href={url('/')} class="brand">MOTO<small>BROKER.IT</small></a>
+      <div class="navlinks">
+        <a href={url('/moto/')}>Moto disponibili</a>
+        <a href={url('/#servizi')}>Servizi</a>
+        <a href={url('/#contatti')}>Contatti</a>
+      </div>
+      <a class="btn btn-primary nav-cta" href={wa}>Valuta la tua moto</a>
     </nav>
   </div>
 </header>
 <style>
-  .header { background: var(--nero); border-bottom: 2px solid var(--rosso); position: sticky; top: 0; z-index: 10; }
-  .header__riga { display: flex; align-items: center; justify-content: space-between; padding-top: 0.75rem; padding-bottom: 0.75rem; gap: 1rem; flex-wrap: wrap; }
-  .header__logo { font-family: var(--font-titoli); font-size: 1.5rem; color: var(--bianco); text-decoration: none; }
-  .header__logo span { color: var(--arancione); }
-  .header__nav { display: flex; gap: 1.25rem; }
-  .header__nav a { text-decoration: none; color: var(--grigio); text-transform: uppercase; font-size: 0.85rem; font-weight: 700; }
-  .header__nav a:hover { color: var(--bianco); }
+  .header {
+    position: fixed;
+    z-index: 50;
+    inset: 0 0 auto;
+    background: rgba(7, 7, 7, 0.83);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  }
+  .nav { height: 78px; display: flex; align-items: center; gap: 30px; }
+  .brand {
+    font-family: var(--font-titoli);
+    font-size: 1.7rem;
+    line-height: 0.85;
+    margin-right: auto;
+    text-transform: uppercase;
+  }
+  .brand small { display: block; font-size: 0.8rem; color: var(--arancione); letter-spacing: 0.08em; }
+  .navlinks { display: flex; gap: 24px; color: #d5d5d5; font-size: 0.9rem; }
+  .navlinks a:hover { color: #fff; }
+  @media (max-width: 980px) {
+    .navlinks { display: none; }
+  }
+  @media (max-width: 650px) {
+    .nav { height: 68px; }
+    .nav-cta { display: none; }
+  }
 </style>

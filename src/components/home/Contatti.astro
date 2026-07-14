@@ -1,17 +1,34 @@
 ---
-import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
+import { TELEFONO_DISPLAY, linkWhatsApp } from '../../lib/contatti';
+
+const wa = linkWhatsApp('Ciao MotoBroker.it, vorrei una valutazione della mia moto');
 ---
-<section class="contatti" id="contatti">
-  <div class="contenitore">
-    <h2 class="titolo-sezione">Contattaci</h2>
-    <p class="contatti__testo">Chiama o manda un messaggio: rispondiamo tutti i giorni.</p>
-    <p class="contatti__numero"><a href={TELEFONO_TEL}>{TELEFONO_DISPLAY}</a></p>
-    <a class="bottone bottone--whatsapp" href={linkWhatsApp('Ciao! Vi contatto da Motobroker.it')}>Scrivici su WhatsApp</a>
+<section class="section dark" id="contatti">
+  <div class="wrap">
+    <div class="banner">
+      <div class="eyebrow">Prima valutazione senza impegno</div>
+      <h2 class="display">La tua moto merita il miglior risultato.</h2>
+      <p>
+        Mandaci marca, modello, anno, chilometri e alcune fotografie. Ti ricontatteremo per
+        valutare il percorso più adatto.
+      </p>
+      <a class="btn banner-btn" href={wa}>Scrivici su WhatsApp · {TELEFONO_DISPLAY}</a>
+    </div>
   </div>
 </section>
 <style>
-  .contatti { padding: 4rem 0; text-align: center; }
-  .contatti__testo { color: var(--grigio); margin-top: 0.75rem; }
-  .contatti__numero a { font-family: var(--font-titoli); font-size: clamp(2rem, 7vw, 3.2rem); color: var(--bianco); text-decoration: none; }
-  .contatti__numero { margin: 0.75rem 0 1.25rem; }
+  .banner {
+    padding: 60px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, #ad0500, #ef1e16);
+    position: relative;
+    overflow: hidden;
+  }
+  .banner .eyebrow { color: #fff; }
+  .banner h2 { max-width: 750px; margin: 12px 0 18px; }
+  .banner p { max-width: 600px; }
+  .banner-btn { background: #fff; color: #111; margin-top: 15px; }
+  @media (max-width: 650px) {
+    .banner { padding: 35px 24px; }
+  }
 </style>

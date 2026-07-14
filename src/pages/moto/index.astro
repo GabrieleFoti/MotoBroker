@@ -7,15 +7,22 @@ import { ordinaMoto } from '../../lib/moto';
 const moto = ordinaMoto(await getCollection('moto'));
 ---
 <Layout title="Moto in vendita — Motobroker.it" description="Le moto usate attualmente in vendita tramite Motobroker.it.">
-  <section class="contenitore galleria">
-    <h1 class="titolo-sezione">Moto in vendita</h1>
-    {moto.length === 0 && <p>Nessuna moto in vendita al momento. Torna a trovarci presto!</p>}
-    <div class="galleria__griglia">
-      {moto.map((entry) => <SchedaMoto entry={entry} />)}
+  <section class="section galleria">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Catalogo</div>
+          <h1 class="display">Moto disponibili</h1>
+        </div>
+      </div>
+      {moto.length === 0 && <p>Nessuna moto in vendita al momento. Torna a trovarci presto!</p>}
+      <div class="grid">
+        {moto.map((entry) => <SchedaMoto entry={entry} />)}
+      </div>
     </div>
   </section>
 </Layout>
 <style>
-  .galleria { padding-top: 2.5rem; }
-  .galleria__griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+  .galleria { padding-top: 140px; }
+  .galleria h1 { font-size: clamp(3rem, 5vw, 5.1rem); margin: 10px 0 0; }
 </style>

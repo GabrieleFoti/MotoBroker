@@ -12,26 +12,69 @@ const slug = slugMoto(entry);
 const copertina = fotoMoto(slug)[0];
 const { marca, modello, anno, km, prezzo, venduta } = entry.data;
 ---
-<a href={url(`/moto/${slug}/`)} class:list={['scheda', { 'scheda--venduta': venduta }]}>
-  <div class="scheda__foto">
-    {copertina && <Image src={copertina} alt={`${marca} ${modello}`} width={640} widths={[320, 640]} sizes="(max-width: 640px) 100vw, 340px" />}
-    {venduta && <span class="scheda__badge">Venduta</span>}
+<a href={url(`/moto/${slug}/`)} class="moto-card">
+  <div class="card-img">
+    {copertina && <Image src={copertina} alt={`${marca} ${modello}`} width={640} widths={[320, 640]} sizes="(max-width: 640px) 100vw, 380px" />}
+    <span class:list={['badge', { red: venduta }]}>{venduta ? 'Venduta' : 'Disponibile'}</span>
   </div>
-  <div class="scheda__info">
+  <div class="card-body">
     <h3>{marca} {modello}</h3>
-    <p class="scheda__dati">{anno}{km !== undefined && ` · ${formattaKm(km)}`}</p>
-    <p class="scheda__prezzo">{formattaPrezzo(prezzo)}</p>
+    <div class="spec-row">
+      <span>{anno}</span>
+      {km !== undefined && <span>{formattaKm(km)}</span>}
+    </div>
+    <div class="card-foot">
+      <strong class="price">{formattaPrezzo(prezzo)}</strong>
+      <span class="open-link">Vedi scheda →</span>
+    </div>
   </div>
 </a>
 <style>
-  .scheda { background: var(--nero-carta); border-radius: 10px; overflow: hidden; text-decoration: none; display: block; transition: transform 0.15s; }
-  .scheda:hover { transform: translateY(-3px); }
-  .scheda__foto { position: relative; aspect-ratio: 3 / 2; }
-  .scheda__foto img { width: 100%; height: 100%; object-fit: cover; }
-  .scheda--venduta img { filter: grayscale(0.7); opacity: 0.7; }
-  .scheda__badge { position: absolute; top: 0.75rem; left: 0.75rem; background: var(--rosso); color: var(--bianco); font-family: var(--font-titoli); text-transform: uppercase; padding: 0.2rem 0.7rem; border-radius: 4px; font-size: 0.85rem; }
-  .scheda__info { padding: 1rem; }
-  .scheda__info h3 { font-family: var(--font-titoli); text-transform: uppercase; font-size: 1.1rem; }
-  .scheda__dati { color: var(--grigio); font-size: 0.9rem; }
-  .scheda__prezzo { color: var(--arancione); font-weight: 700; margin-top: 0.3rem; }
+  .moto-card {
+    background: #121212;
+    border: 1px solid #272727;
+    border-radius: 24px;
+    overflow: hidden;
+    display: block;
+    transition: 0.25s;
+    position: relative;
+  }
+  .moto-card:hover {
+    transform: translateY(-6px);
+    border-color: #505050;
+    box-shadow: 0 25px 55px rgba(0, 0, 0, 0.35);
+  }
+  .moto-card:focus-visible { outline: 3px solid var(--arancione); outline-offset: 4px; }
+  .card-img { height: 265px; position: relative; background: #161616; overflow: hidden; }
+  .card-img img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+  .moto-card:hover img { transform: scale(1.035); }
+  .badge {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    border-radius: 999px;
+    padding: 7px 10px;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .badge.red { background: rgba(225, 6, 0, 0.94); }
+  .card-body { padding: 22px; }
+  .card-body h3 {
+    font-size: 1.8rem;
+    font-family: var(--font-titoli);
+    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 1;
+  }
+  .spec-row { display: flex; gap: 13px; flex-wrap: wrap; color: #969696; font-size: 0.82rem; margin: 10px 0 20px; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #2b2b2b; padding-top: 17px; }
+  .price { font-family: var(--font-titoli); font-size: 1.8rem; font-weight: 400; }
+  .open-link { color: var(--arancione); font-weight: 900; font-size: 0.85rem; }
+  @media (max-width: 650px) {
+    .card-img { height: 245px; }
+  }
 </style>

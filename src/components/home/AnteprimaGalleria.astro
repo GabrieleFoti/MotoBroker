@@ -7,18 +7,18 @@ import { url } from '../../lib/url';
 const moto = ordinaMoto(await getCollection('moto')).slice(0, 3);
 ---
 {moto.length > 0 && (
-  <section class="anteprima">
-    <div class="contenitore">
-      <h2 class="titolo-sezione">Moto in vendita</h2>
-      <div class="anteprima__griglia">
+  <section class="section dark" id="moto">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <div class="eyebrow">Catalogo</div>
+          <h2 class="display">Moto disponibili</h2>
+        </div>
+        <a class="btn btn-ghost" href={url('/moto/')}>Vedi tutte le moto</a>
+      </div>
+      <div class="grid">
         {moto.map((entry) => <SchedaMoto entry={entry} />)}
       </div>
-      <a class="bottone anteprima__tutte" href={url('/moto/')}>Vedi tutte le moto</a>
     </div>
   </section>
 )}
-<style>
-  .anteprima { padding: 4rem 0; }
-  .anteprima__griglia { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
-  .anteprima__tutte { margin-top: 0.5rem; }
-</style>

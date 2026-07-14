@@ -1,11 +1,13 @@
 ---
-import { Image } from 'astro:assets';
+import { getImage } from 'astro:assets';
 import { getCollection } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import SchedaMoto from '../../components/SchedaMoto.astro';
 import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../../lib/contatti';
 import { fotoMoto } from '../../lib/foto';
 import { formattaKm, formattaPrezzo } from '../../lib/formatta';
-import { slugMoto } from '../../lib/moto';
+import { ordinaMoto, slugMoto } from '../../lib/moto';
+import { url } from '../../lib/url';
 
 export async function getStaticPaths() {
   const moto = await getCollection('moto');
@@ -14,43 +16,259 @@ export async function getStaticPaths() {
 
 const { entry } = Astro.props;
 const slug = slugMoto(entry);
-const foto = fotoMoto(slug);
+const foto = await Promise.all(
+  fotoMoto(slug).map((f) => getImage({ src: f, width: 1200, widths: [640, 1200] }))
+);
 const { marca, modello, anno, km, cilindrata, prezzo, descrizione, venduta } = entry.data;
 const nome = `${marca} ${modello}`;
-const wa = linkWhatsApp(`Ciao! Vorrei informazioni sulla ${nome} (${anno}) vista su Motobroker.it`);
+const wa = linkWhatsApp(`Ciao MotoBroker.it, vorrei informazioni sulla ${nome} (${anno}) pubblicata a ${formattaPrezzo(prezzo)}.`);
+
+const quickSpecs = [
+  ['Anno', String(anno)],
+  km !== undefined ? ['Chilometri', formattaKm(km)] : null,
+  cilindrata !== undefined ? ['Cilindrata', `${cilindrata} cc`] : null,
+  ['Stato', venduta ? 'Venduta' : 'Disponibile'],
+].filter((s): s is [string, string] => s !== null);
+
+const specs: [string, string][] = [['Marca e modello', nome], ...quickSpecs];
+
+const altre = ordinaMoto(await getCollection('moto'))
+  .filter((m) => slugMoto(m) !== slug && !m.data.venduta)
+  .slice(0, 3);
 ---
 <Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`} ogImage={foto[0]?.src}>
-  <article class="contenitore dettaglio">
-    <h1 class="titolo-sezione">{nome} {venduta && <span class="dettaglio__venduta">Venduta</span>}</h1>
-    <div class="dettaglio__foto">
-      {foto.map((f, i) => (
-        <Image src={f} alt={`${nome} — foto ${i + 1}`} width={1200} widths={[640, 1200]} sizes="(max-width: 700px) 100vw, 700px" loading={i === 0 ? 'eager' : 'lazy'} />
-      ))}
-    </div>
-    <dl class="dettaglio__dati">
-      <div><dt>Anno</dt><dd>{anno}</dd></div>
-      {km !== undefined && <div><dt>Chilometri</dt><dd>{formattaKm(km)}</dd></div>}
-      {cilindrata !== undefined && <div><dt>Cilindrata</dt><dd>{cilindrata} cc</dd></div>}
-      <div><dt>Prezzo</dt><dd class="dettaglio__prezzo">{formattaPrezzo(prezzo)}</dd></div>
-    </dl>
-    {descrizione && <p class="dettaglio__descrizione">{descrizione}</p>}
-    {!venduta && (
-      <div class="dettaglio__cta">
-        <a class="bottone bottone--whatsapp" href={wa}>Chiedi info su WhatsApp</a>
-        <a class="bottone" href={TELEFONO_TEL}>Chiama {TELEFONO_DISPLAY}</a>
+  <section class="detail-hero">
+    <div class="wrap">
+      <div class="breadcrumb">
+        <a href={url('/')}>Home</a> / <a href={url('/moto/')}>Moto disponibili</a> / <span>{nome}</span>
       </div>
-    )}
-  </article>
+      <div class="detail-top">
+        <div>
+          <div class="gallery-main">
+            {foto[0] && <img id="mainImage" src={foto[0].src} srcset={foto[0].srcSet.attribute} sizes="(max-width: 980px) 100vw, 730px" alt={nome} />}
+            <span class:list={['badge', 'gallery-status', { red: venduta }]}>{venduta ? 'Venduta' : 'Disponibile'}</span>
+            {foto.length > 1 && (
+              <>
+                <button class="gallery-nav prev" id="galleryPrev" aria-label="Foto precedente">‹</button>
+                <button class="gallery-nav next" id="galleryNext" aria-label="Foto successiva">›</button>
+              </>
+            )}
+          </div>
+          {foto.length > 1 && (
+            <div class="thumbs" id="thumbs">
+              {foto.slice(0, 6).map((f, i) => (
+                <button class:list={['thumb', { active: i === 0 }]} data-src={f.src} aria-label={`Mostra foto ${i + 1}`}>
+                  <img src={f.src} alt="" loading="lazy" />
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        <aside class="detail-summary">
+          <div class="eyebrow">Moto in conto vendita</div>
+          <h1 class="display">{nome}</h1>
+          <div class="detail-price display">{formattaPrezzo(prezzo)}</div>
+          <div class="quick-specs">
+            {quickSpecs.map(([a, b]) => (
+              <div class="quick-spec"><small>{a}</small><b>{b}</b></div>
+            ))}
+          </div>
+          {!venduta && (
+            <div class="summary-actions">
+              <a class="btn btn-primary" href={wa}>Richiedi informazioni</a>
+              <a class="btn btn-ghost" href={TELEFONO_TEL}>Chiama {TELEFONO_DISPLAY}</a>
+            </div>
+          )}
+          <div class="safe-box">
+            <strong>Vendita seguita da MotoBroker.it</strong>
+            Gestiamo richieste, selezione degli interessati, trattativa e passaggi operativi fino alla consegna.
+          </div>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-content">
+    <div class="wrap detail-layout">
+      <div>
+        {descrizione && (
+          <article class="content-card">
+            <h2>Descrizione</h2>
+            <p class="descrizione">{descrizione}</p>
+          </article>
+        )}
+        <article class="content-card">
+          <h2>Dati tecnici</h2>
+          <div class="spec-grid">
+            {specs.map(([a, b]) => (
+              <div class="spec"><span>{a}</span><b>{b}</b></div>
+            ))}
+          </div>
+        </article>
+        {altre.length > 0 && (
+          <div class="related">
+            <div class="eyebrow">Potrebbero interessarti</div>
+            <h2 class="display related-title">Altre moto disponibili</h2>
+            <div class="grid">
+              {altre.map((m) => <SchedaMoto entry={m} />)}
+            </div>
+          </div>
+        )}
+      </div>
+      <aside>
+        <div class="side-card">
+          <div class="icon">◉</div>
+          <h3>Finanziamento</h3>
+          <p>Possibilità di valutare soluzioni di finanziamento tramite partner, soggette ad approvazione.</p>
+        </div>
+        <div class="side-card">
+          <div class="icon">↗</div>
+          <h3>Trasporto</h3>
+          <p>Organizziamo il trasporto della moto su richiesta, con modalità e costi definiti prima della conferma.</p>
+        </div>
+      </aside>
+    </div>
+  </section>
 </Layout>
+
+<script>
+  const main = document.getElementById('mainImage') as HTMLImageElement | null;
+  const thumbs = Array.from(document.querySelectorAll<HTMLButtonElement>('#thumbs .thumb'));
+  const srcs = thumbs.map((t) => t.dataset.src).filter((s): s is string => !!s);
+  let corrente = 0;
+
+  function mostra(i: number) {
+    if (!main || srcs.length === 0) return;
+    corrente = ((i % srcs.length) + srcs.length) % srcs.length;
+    main.removeAttribute('srcset');
+    main.src = srcs[corrente];
+    thumbs.forEach((x, j) => x.classList.toggle('active', j === corrente));
+  }
+
+  thumbs.forEach((t, i) => t.addEventListener('click', () => mostra(i)));
+  document.getElementById('galleryPrev')?.addEventListener('click', () => mostra(corrente - 1));
+  document.getElementById('galleryNext')?.addEventListener('click', () => mostra(corrente + 1));
+</script>
+
 <style>
-  .dettaglio { padding-top: 2.5rem; max-width: 760px; }
-  .dettaglio__venduta { color: var(--grigio); font-size: 0.6em; vertical-align: middle; }
-  .dettaglio__foto { display: grid; gap: 0.75rem; margin: 1.5rem 0; }
-  .dettaglio__foto img { border-radius: 10px; width: 100%; height: auto; }
-  .dettaglio__dati { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; background: var(--nero-carta); padding: 1.25rem; border-radius: 10px; }
-  .dettaglio__dati dt { color: var(--grigio); font-size: 0.8rem; text-transform: uppercase; }
-  .dettaglio__dati dd { font-weight: 700; font-size: 1.1rem; }
-  .dettaglio__prezzo { color: var(--arancione); }
-  .dettaglio__descrizione { margin: 1.5rem 0; white-space: pre-line; }
-  .dettaglio__cta { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .detail-hero {
+    padding: 112px 0 28px;
+    background: linear-gradient(180deg, #0d0d0d, #080808);
+    border-bottom: 1px solid #222;
+  }
+  .breadcrumb { color: #898989; font-size: 0.85rem; margin-bottom: 24px; }
+  .breadcrumb a { color: #cfcfcf; }
+  .breadcrumb a:hover { color: #fff; }
+  .detail-top { display: grid; grid-template-columns: 1.25fr 0.75fr; gap: 34px; align-items: start; }
+  .gallery-main {
+    height: 590px;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid #2d2d2d;
+    background: #111;
+    position: relative;
+  }
+  .gallery-main img { width: 100%; height: 100%; object-fit: cover; }
+  .badge {
+    border-radius: 999px;
+    padding: 7px 10px;
+    background: rgba(0, 0, 0, 0.82);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+  .badge.red { background: rgba(225, 6, 0, 0.94); }
+  .gallery-status { position: absolute; left: 20px; top: 20px; }
+  .gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    color: #fff;
+    font-size: 1.7rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-bottom: 4px;
+  }
+  .gallery-nav:hover { background: rgba(225, 6, 0, 0.85); }
+  .gallery-nav.prev { left: 16px; }
+  .gallery-nav.next { right: 16px; }
+  .thumbs { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 12px; }
+  .thumb {
+    height: 104px;
+    border: 2px solid transparent;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #111;
+    cursor: pointer;
+    padding: 0;
+  }
+  .thumb.active { border-color: var(--rosso); }
+  .thumb img { width: 100%; height: 100%; object-fit: cover; }
+  .detail-summary {
+    position: sticky;
+    top: 104px;
+    background: linear-gradient(155deg, #171717, #0e0e0e);
+    border: 1px solid #2a2a2a;
+    border-radius: 28px;
+    padding: 30px;
+    box-shadow: var(--ombra);
+  }
+  .detail-summary h1 { font-size: clamp(3rem, 5vw, 5.6rem); margin: 10px 0 14px; }
+  .detail-price { font-size: 3rem; margin: 12px 0 20px; }
+  .quick-specs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 25px 0; }
+  .quick-spec { border: 1px solid #2b2b2b; border-radius: 15px; padding: 14px; background: #121212; }
+  .quick-spec small { display: block; color: #777; text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.12em; }
+  .quick-spec b { display: block; margin-top: 4px; }
+  .summary-actions { display: grid; gap: 11px; }
+  .summary-actions .btn { width: 100%; }
+  .safe-box { border-top: 1px solid #2b2b2b; margin-top: 24px; padding-top: 20px; color: #aaa; font-size: 0.86rem; }
+  .safe-box strong { color: #fff; display: block; margin-bottom: 4px; }
+  .detail-content { padding: 70px 0 100px; }
+  .detail-layout { display: grid; grid-template-columns: 1fr 370px; gap: 42px; }
+  .content-card { border: 1px solid #292929; border-radius: 24px; background: #101010; padding: 30px; margin-bottom: 22px; }
+  .content-card h2 {
+    font-size: 2.25rem;
+    margin: 0 0 18px;
+    font-family: var(--font-titoli);
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  .content-card p { color: #b2b2b2; }
+  .descrizione { white-space: pre-line; }
+  .spec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .spec { border: 1px solid #292929; border-radius: 14px; padding: 14px; background: #141414; }
+  .spec span { display: block; color: #777; text-transform: uppercase; font-size: 0.66rem; letter-spacing: 0.1em; }
+  .spec b { display: block; margin-top: 5px; }
+  .side-card { border: 1px solid #292929; border-radius: 22px; background: #111; padding: 24px; margin-bottom: 18px; }
+  .side-card h3 { font-family: var(--font-titoli); text-transform: uppercase; font-weight: 400; font-size: 1.7rem; margin: 0 0 8px; }
+  .side-card p { color: #999; font-size: 0.9rem; }
+  .side-card .icon { font-size: 1.6rem; color: var(--rosso); margin-bottom: 10px; }
+  .related { padding-top: 30px; }
+  .related-title { font-size: 3.4rem; margin: 8px 0 25px; }
+  @media (max-width: 980px) {
+    .detail-top, .detail-layout { grid-template-columns: 1fr; }
+    .detail-summary { position: static; }
+    .gallery-main { height: 500px; }
+  }
+  @media (max-width: 650px) {
+    .gallery-main { height: 410px; border-radius: 20px; }
+    .thumbs { gap: 7px; grid-template-columns: repeat(3, 1fr); }
+    .thumb { height: 72px; }
+    .detail-summary { padding: 23px; }
+    .detail-summary h1 { font-size: 3.3rem; }
+    .detail-layout { gap: 20px; }
+    .spec-grid { grid-template-columns: 1fr 1fr; }
+    .content-card { padding: 22px; }
+  }
 </style>
