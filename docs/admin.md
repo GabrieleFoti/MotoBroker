@@ -10,11 +10,13 @@ committa `moto/<slug>/info.yaml` + foto nel repo; la GitHub Action
 2. **Aggiorna `public/admin/config.yml`**: sostituisci `TUO-UTENTE/MotoBroker`
    con owner/repo reali.
 3. **OAuth proxy** (serve perché GitHub Pages non può custodire il client secret):
+   - Deploya prima il proxy OAuth gratuito, ad es. [sterlingwes/decap-proxy](https://github.com/sterlingwes/decap-proxy)
+     su Cloudflare Workers (piano free): ottieni l'URL del worker
+     (`https://<worker>.workers.dev`).
    - Crea una GitHub OAuth App (*Settings → Developer settings → OAuth Apps*):
      - Homepage URL: l'URL del sito Pages
-     - Authorization callback URL: `https://<proxy>/callback`
-   - Deploya un proxy OAuth gratuito, ad es. [sterlingwes/decap-proxy](https://github.com/sterlingwes/decap-proxy)
-     su Cloudflare Workers (piano free), con `client_id`/`client_secret` dell'OAuth App.
+     - Authorization callback URL: `https://<worker>.workers.dev/callback`
+   - Aggiungi `client_id`/`client_secret` dell'OAuth App come secrets del worker.
    - In `config.yml` decommenta `base_url` puntando al worker.
 4. Apri `https://<sito>/admin/`, login con GitHub: solo chi ha accesso in
    scrittura al repo può salvare.

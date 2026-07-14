@@ -1,12 +1,9 @@
-# Configurazione Decap CMS — pannello admin moto.
-# TODO prima del primo uso online:
-#   1. sostituire "TUO-UTENTE/MotoBroker" con owner/repo reali
-#   2. configurare base_url dell'OAuth proxy (vedi docs/admin.md)
+# Configurazione Decap CMS — pannello admin moto (vedi docs/admin.md).
 backend:
   name: github
-  repo: TUO-UTENTE/MotoBroker
+  repo: GabrieleFoti/MotoBroker
   branch: main
-  # base_url: https://TUO-OAUTH-PROXY.workers.dev
+  base_url: https://motobroker-decap-proxy.motobroker.workers.dev
 
 # Per provare in locale senza OAuth: `npx decap-server` in un terminale
 # e `npm run dev` in un altro, poi apri http://localhost:4321/admin/
