@@ -30,6 +30,7 @@ const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site) : undefin
     {ogImage && Astro.site && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
     <meta name="twitter:card" content={ogImage ? 'summary_large_image' : 'summary'} />
     <slot name="head" />
+    <meta name="google-site-verification" content="NzFUZaV5q_nOkc6eJuX4F96nAYlSEDAgrJAC-yHYZyg" />
   </head>
   <body>
     <Header />
