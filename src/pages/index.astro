@@ -4,11 +4,23 @@ import Hero from '../components/home/Hero.astro';
 import AnteprimaGalleria from '../components/home/AnteprimaGalleria.astro';
 import Servizi from '../components/home/Servizi.astro';
 import Contatti from '../components/home/Contatti.astro';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'MotoBroker.it',
+  url: 'https://motobroker.it',
+  telephone: '+393286119960',
+  description:
+    'Intermediazione vendita moto usate tra privati: valutazione, annunci, trattativa gestita e vendita sicura.',
+  areaServed: 'Firenze e dintorni',
+};
 ---
 <Layout
   title="Motobroker.it — Vendi la tua moto in modo sicuro, veloce e senza stress"
   description="Intermediazione vendita moto usate tra privati: valutazione professionale, foto e annunci, trattativa gestita, vendita sicura e garantita."
 >
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <Hero />
   <AnteprimaGalleria />
   <Servizi />
