@@ -59,7 +59,16 @@ const jsonLd = {
   }),
 };
 ---
-<Layout title={`${nome} — Motobroker.it`} description={`${nome} ${anno} in vendita tramite Motobroker.it`} ogImage={foto[0]?.src}>
+<Layout
+  title={`${nome} — Motobroker.it`}
+  description={[
+    `${nome} ${anno} in vendita`,
+    km !== undefined ? formattaKm(km) : null,
+    prezzo !== undefined ? formattaPrezzo(prezzo) : null,
+    'trattativa gestita da MotoBroker.it, Firenze.',
+  ].filter(Boolean).join(', ')}
+  ogImage={foto[0]?.src}
+>
   <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
   <section class="detail-hero">
     <div class="wrap">
