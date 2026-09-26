@@ -9,7 +9,7 @@
   --panel2: #151515;
   --rosso: #e10600;
   --rosso2: #ff2b21;
-  --arancione: #f16a32;
+  --arancione: var(--rosso);
   --bianco: #f5f5f5;
   --grigio: #a4a4a4;
   --linea: #292929;

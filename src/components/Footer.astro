@@ -1,11 +1,12 @@
 ---
 import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../lib/contatti';
+import { url } from '../lib/url';
 ---
 <footer class="footer">
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <div class="footer-brand display">MOTO<span>BROKER.IT</span></div>
+        <img class="footer-brand" src={url('/logo.png')} alt="MotoBroker.it" width="1600" height="800" />
         <p>Conto vendita e intermediazione moto a Firenze e dintorni.</p>
       </div>
       <div>
@@ -29,8 +30,7 @@ import { TELEFONO_DISPLAY, TELEFONO_TEL, linkWhatsApp } from '../lib/contatti';
 <style>
   .footer { padding: 50px 0 28px; border-top: 1px solid #222; background: #090909; }
   .footer-grid { display: grid; grid-template-columns: 1.2fr 0.8fr 0.8fr; gap: 35px; }
-  .footer-brand { font-size: 2.8rem; }
-  .footer-brand span { color: var(--arancione); }
+  .footer-brand { height: 90px; width: auto; margin-bottom: 12px; }
   .footer h4 { text-transform: uppercase; color: #777; font-size: 0.78rem; letter-spacing: 0.15em; }
   .footer p, .footer a { color: #aaa; font-size: 0.9rem; }
   .bottom { border-top: 1px solid #222; margin-top: 32px; padding-top: 20px; color: #666; font-size: 0.78rem; }
