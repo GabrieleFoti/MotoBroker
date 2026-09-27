@@ -12,10 +12,10 @@ const moto = ordinaMoto(await getCollection('moto'));
       <div class="section-head">
         <div>
           <div class="eyebrow">Catalogo</div>
-          <h1 class="display">Moto disponibili</h1>
+          <h1 class="display">Veicoli disponibili</h1>
         </div>
       </div>
-      {moto.length === 0 && <p>Nessuna moto in vendita al momento. Torna a trovarci presto!</p>}
+      {moto.length === 0 && <p>Nessun veicolo in vendita al momento. Torna a trovarci presto!</p>}
       <div class="grid">
         {moto.map((entry) => <SchedaMoto entry={entry} />)}
       </div>

@@ -73,7 +73,7 @@ const jsonLd = {
   <section class="detail-hero">
     <div class="wrap">
       <div class="breadcrumb">
-        <a href={url('/')}>Home</a> / <a href={url('/moto/')}>Moto disponibili</a> / <span>{nome}</span>
+        <a href={url('/')}>Home</a> / <a href={url('/moto/')}>Veicoli disponibili</a> / <span>{nome}</span>
       </div>
       <div class="detail-top">
         <div>
@@ -141,7 +141,7 @@ const jsonLd = {
         {altre.length > 0 && (
           <div class="related">
             <div class="eyebrow">Potrebbero interessarti</div>
-            <h2 class="display related-title">Altre moto disponibili</h2>
+            <h2 class="display related-title">Altri veicoli disponibili</h2>
             <div class="grid">
               {altre.map((m) => <SchedaMoto entry={m} />)}
             </div>
