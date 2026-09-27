@@ -9,7 +9,7 @@ import { url } from '../lib/url';
 interface Props { entry: CollectionEntry<'moto'> }
 const { entry } = Astro.props;
 const slug = slugMoto(entry);
-const copertina = fotoMoto(slug)[0];
+const copertina = fotoMoto(slug, entry.data.foto)[0];
 const { marca, modello, anno, km, prezzo, venduta } = entry.data;
 ---
 <a href={url(`/moto/${slug}/`)} class="moto-card">

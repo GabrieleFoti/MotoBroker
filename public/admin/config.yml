@@ -41,11 +41,11 @@ collections:
       - { name: prezzo, label: 'Prezzo (€)', widget: number, value_type: int, required: false, hint: 'Vuoto = "Prezzo su richiesta"' }
       - { name: descrizione, label: Descrizione, widget: text, required: false }
       - { name: venduta, label: Venduta, widget: boolean, default: false }
-      - name: copertina
+      - name: foto
         label: Foto
-        widget: image
+        widget: list
+        field: { name: file, label: Foto, widget: image }
         required: false
         hint: >-
-          Le foto caricate qui finiscono nella cartella della moto e compaiono
-          tutte nella scheda, in ordine alfabetico di nome file (01.jpg, 02.jpg, ...).
-          La prima è la copertina.
+          Trascina le foto per cambiare l'ordine: la prima è la copertina.
+          Le foto nella cartella non elencate qui vanno in coda, in ordine alfabetico.

@@ -33,9 +33,8 @@ direttamente sui file locali, senza login.
 
 ## Note
 
-- Le foto vanno nominate `01.jpg`, `02.jpg`, ... : l'ordine alfabetico decide
-  l'ordine in galleria e la copertina.
-- Il campo `copertina` nel CMS serve solo a caricare file nella cartella della
-  moto: il sito legge tutte le immagini della cartella, non quel campo.
+- L'ordine delle foto è quello del campo `foto` in `info.yaml` (trascinabile
+  nel CMS); la prima è la copertina. Le immagini nella cartella non elencate
+  vengono accodate in ordine alfabetico di nome file.
 - Prima del go-live valutare `local_backend: false` (è ignorato in produzione,
   ma tenerlo esplicito evita confusione).

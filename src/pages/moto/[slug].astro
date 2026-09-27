@@ -17,7 +17,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const slug = slugMoto(entry);
 const foto = await Promise.all(
-  fotoMoto(slug).map((f) => getImage({ src: f, width: 1200, widths: [640, 1200] }))
+  fotoMoto(slug, entry.data.foto).map((f) => getImage({ src: f, width: 1200, widths: [640, 1200] }))
 );
 const { marca, modello, anno, km, cilindrata, prezzo, descrizione, venduta } = entry.data;
 const nome = `${marca} ${modello}`;

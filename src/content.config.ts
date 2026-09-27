@@ -12,6 +12,7 @@ const moto = defineCollection({
     prezzo: z.number().positive().optional(),
     descrizione: z.string().optional(),
     venduta: z.boolean().default(false),
+    foto: z.array(z.string()).default([]),
   }),
 });
 

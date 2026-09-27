@@ -23,10 +23,10 @@ describe('formattaKm', () => {
 describe('linkWhatsApp', () => {
   it('genera link wa.me con messaggio urlencoded', () => {
     expect(linkWhatsApp('Info su Ducati Panigale V4')).toBe(
-      'https://wa.me/393286119960?text=Info%20su%20Ducati%20Panigale%20V4'
+      'https://wa.me/393934789383?text=Info%20su%20Ducati%20Panigale%20V4'
     );
   });
   it('senza messaggio niente query string', () => {
-    expect(linkWhatsApp()).toBe('https://wa.me/393286119960');
+    expect(linkWhatsApp()).toBe('https://wa.me/393934789383');
   });
 });
