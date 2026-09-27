@@ -5,4 +5,8 @@ km: 20000
 cilindrata: 250
 prezzo: 2300
 venduta: true
-copertina: d-ninja.jpeg
+foto:
+  - a-ninja.jpeg
+  - b-ninja.jpeg
+  - c-ninja.jpeg
+  - d-ninja.jpeg

@@ -5,4 +5,19 @@ km: 67000
 cilindrata: 400
 prezzo: 1890
 venduta: false
-copertina: duc-f6.jpeg
+foto:
+  - duc-a1.jpeg
+  - duc-b2.jpeg
+  - duc-c3.png
+  - duc-d4.png
+  - duc-e5.jpeg
+  - duc-f6.jpeg
+  - targa_oscurata.png
+  - whatsapp-image-2026-09-27-at-19.44.23-1-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23-2-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23-3-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23-4-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23-6-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23-7-.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.23.jpeg
+  - whatsapp-image-2026-09-27-at-19.44.24.jpeg

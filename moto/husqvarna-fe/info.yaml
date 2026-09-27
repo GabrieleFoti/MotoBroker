@@ -5,4 +5,8 @@ km: 6000
 cilindrata: 250
 prezzo: 4200
 venduta: false
-copertina: d-husq.jpeg
+foto:
+  - a-husq.jpeg
+  - b-husq.jpeg
+  - c-husq.jpeg
+  - d-husq.jpeg

@@ -5,4 +5,7 @@ km: 87000
 cilindrata: 1150
 prezzo: 2750
 venduta: true
-copertina: 3-bmw.jpeg
+foto:
+  - 1-bmw.jpeg
+  - 2-bmw.jpeg
+  - 3-bmw.jpeg

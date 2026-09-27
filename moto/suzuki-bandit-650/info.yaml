@@ -5,4 +5,8 @@ km: 62000
 cilindrata: 650
 prezzo: 1000
 venduta: true
-copertina: 4-suzuki.jpeg
+foto:
+  - 1-suzuki.jpeg
+  - 2-suzuki.jpeg
+  - 3-suzuki.jpeg
+  - 4-suzuki.jpeg
