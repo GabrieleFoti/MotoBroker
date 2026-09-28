@@ -6,8 +6,4 @@ cilindrata: 250
 prezzo: 4200
 venduta: false
 foto:
-  - a-husq.jpeg
-  - b-husq.jpeg
-  - c-husq.jpeg
-  - d-husq.jpeg
-  - c-husq.jpeg
+  - a1-husq.jpeg
