@@ -26,8 +26,8 @@ collections:
     format: yaml
     extension: yaml
     path: '{{slug}}/info'
-    media_folder: ''
-    public_folder: ''
+    media_folder: '.'
+    public_folder: '.'
     identifier_field: modello
     slug: '{{fields.marca}}-{{fields.modello}}'
     summary: '{{marca}} {{modello}} ({{anno}})'
