@@ -6,7 +6,6 @@ cilindrata: 1150
 prezzo: 2750
 venduta: true
 foto:
-  - 1-bmw.jpeg
-  - 2-bmw.jpeg
-  - 3-bmw.jpeg
   - a-bmw.jpeg
+  - b-bmw.jpeg
+  - c-bmw.jpeg
