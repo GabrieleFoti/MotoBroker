@@ -4,7 +4,7 @@ anno: 2017
 km: 6000
 cilindrata: 250
 prezzo: 4200
-venduta: false
+venduta: true
 foto:
   - a1-husq.jpeg
   - a-husq.jpeg
