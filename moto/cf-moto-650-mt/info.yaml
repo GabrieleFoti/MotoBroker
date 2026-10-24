@@ -1,47 +1,14 @@
-marca: "CF MOTO "
+marca: CF MOTO
 modello: 650 MT
 anno: 2021
-km: 15000
+km: 12345
 cilindrata: 650
 prezzo: 2390
-descrizione: >
-  CFMOTO 650 MT – ANNO 2021 – 15.000 KM
-
-
-  In vendita presso Motobroker, CFMOTO 650 MT, immatricolata nel 2021, con circa 15.000 km.
-
-  Moto versatile e confortevole, ideale sia per gli spostamenti quotidiani che per i viaggi e le uscite fuori porta.
-
-
-  In ottime condizioni di meccanica e carrozzeria, come visibile dalle foto.
-
-
-  Caratteristiche principali:
-
-  * Anno: 2021
-
-  * Chilometraggio: circa 15.000 km
-
-  * Cilindrata: 650 cc
-
-  * Tipologia: Touring / Adventure
-
-
-  DA SEGNALARE:
-
-  Il display della strumentazione digitale si accende regolarmente, ma presenta un problema di luminosità che rende le informazioni visualizzate molto poco visibili.
-
-  La problematica può essere verificata e risolta presso una concessionaria o officina specializzata CFMOTO.
-
-  Il prezzo di vendita è già stato adeguato tenendo conto di questo difetto.
-
-
-  PREZZO: euro 2390,00 - IMPORTO TOTALMENTE FINANZIABILE e moto vendibile anche con GARANZIA!!!
-
-
-  Moto visionabile su appuntamento.
-
-  Per ulteriori informazioni non esitate a contattarci anche su WhatsApp al 393 478 9383.
+descrizione: ">"
 venduta: false
 foto:
   - 5e-cfmoto.jpeg
+  - 1a-cfmoto.png
+  - 2b-cfmoto.png
+  - 3c-cfmoto.png
+  - 4d-cfmoto.png
