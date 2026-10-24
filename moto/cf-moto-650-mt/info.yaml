@@ -5,7 +5,7 @@ km: 12345
 cilindrata: 650
 prezzo: 2390
 descrizione: ">"
-venduta: false
+venduta: true
 foto:
   - 5e-cfmoto.jpeg
   - 1a-cfmoto.png
