@@ -95,3 +95,29 @@ Per test E2E contro un branch diverso da `main` (es. `cms-test`), vedi
 `infra/README.md` (variabile Lambda `GITHUB_BRANCH`) e usa le variabili
 `VITE_CMS_GITHUB_BRANCH` (anteprime foto) impostandole in un file `.env` o
 passandole al comando `dev`/`build`.
+
+## Test E2E automatico
+
+`scripts/e2e-admin.mjs` (Playwright) copre il flusso completo: crea un utente
+Cognito di test, fa il primo accesso con cambio password, crea una moto con 2
+foto, la modifica (prezzo + rimozione di una foto), la segna venduta dal
+toggle rapido dell'elenco, la elimina (da viewport mobile 390px) — e cancella
+sempre l'utente di test alla fine, anche in caso di errore.
+
+```bash
+# 1. punta la Lambda a un branch di prova (mai main), es. cms-test:
+aws lambda update-function-configuration --profile Zentrya --region us-east-1 \
+  --function-name motobroker-cms --environment "Variables={...,GITHUB_BRANCH=cms-test}"
+
+# 2. due immagini JPEG/PNG qualsiasi in una cartella, poi:
+E2E_FIXTURES_DIR=/percorso/con/foto1.png/e/foto2.png \
+VITE_CMS_GITHUB_BRANCH=cms-test npm run dev -- --port 4321 &
+
+# 3. in un altro terminale:
+node scripts/e2e-admin.mjs
+
+# 4. rimetti la Lambda su GITHUB_BRANCH=main e cancella il branch di prova.
+```
+
+Gli screenshot (login, primo accesso, elenco, form nuovo/modifica, elenco con
+«Venduta», elenco e form mobile 390px) finiscono in `docs/screenshots/admin/`.
