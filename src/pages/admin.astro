@@ -6,11 +6,16 @@ import { url } from '../lib/url';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="noindex" />
-    <link rel="cms-config-url" type="text/yaml" href={url('/admin/config.yml')} />
+    <meta name="robots" content="noindex, nofollow" />
     <title>Admin — MotoBroker.it</title>
+    <link rel="icon" type="image/png" sizes="32x32" href={url('/favicon-32.png')} />
   </head>
   <body>
-    <script is:inline src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
+    <div id="admin-root"></div>
+    <script>
+      import '../styles/global.css';
+      import '../admin/admin.css';
+      import '../admin/app.js';
+    </script>
   </body>
 </html>

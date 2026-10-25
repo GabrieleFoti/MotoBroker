@@ -3,3 +3,5 @@ dist/
 .astro/
 .DS_Store
 preview.html
+.env
+.env.local
