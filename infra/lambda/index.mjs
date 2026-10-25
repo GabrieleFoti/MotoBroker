@@ -1,7 +1,7 @@
 // Lambda motobroker-cms
 // Node.js 22, ESM, solo AWS SDK v3 (già presente nel runtime Lambda) + fetch globale
 // (disponibile in Node 18+) per parlare con l'API REST/Git Data di GitHub.
-// Nessuna dipendenza extra: niente node_modules nello zip.
+// Unica dipendenza oltre all'SDK: js-yaml (lo stesso parser di Astro), copiato nello zip da deploy.sh.
 //
 // Routes (dietro API Gateway HTTP API con authorizer JWT Cognito su tutte le rotte):
 //   GET    /moto        -> elenco moto letto da `main` (slug, campi info.yaml, foto) + headSha
@@ -23,6 +23,8 @@ import {
   detectImageFormat,
   serializeInfoYaml,
   parseInfoYaml,
+  unknownFields,
+  KNOWN_FIELDS,
   blobReceipt,
   checkReceipt,
 } from './lib.mjs'
@@ -304,6 +306,15 @@ async function handlePutMoto(slug, payload, event) {
   if (isRename && targetExists)
     return json(409, { error: `esiste già una moto "${slug}"`, code: 'SLUG_EXISTS' })
 
+  // Il file attuale ha campi che il pannello non conosce? Riscriverlo li perderebbe:
+  // meglio rifiutare e farlo sistemare a mano.
+  const currentInfo = sourceFiles.find((e) => e.path === `moto/${sourceSlug}/info.yaml`)
+  if (currentInfo) {
+    const extra = unknownFields(parseInfoYaml(await getBlobContent(currentInfo.sha)))
+    if (extra.length)
+      return json(422, { error: `info.yaml contiene campi non gestiti dal pannello: ${extra.join(', ')}`, code: 'UNKNOWN_FIELDS' })
+  }
+
   const existingBySha = new Set(sourceFiles.map((e) => e.sha))
   const key = await getGithubToken()
   const entries = []
@@ -321,7 +332,9 @@ async function handlePutMoto(slug, payload, event) {
     entries.push({ path: `moto/${slug}/${p.name}`, mode: '100644', type: 'blob', sha })
   }
 
-  const yamlContent = serializeInfoYaml({ ...data, foto: names })
+  // Dal client si prendono solo i campi noti (eventuali extra, es. lo slug, si ignorano).
+  const clean = Object.fromEntries(KNOWN_FIELDS.filter((k) => k !== 'foto' && data[k] !== undefined).map((k) => [k, data[k]]))
+  const yamlContent = serializeInfoYaml({ ...clean, foto: names })
   const infoBlob = await createBlob(Buffer.from(yamlContent, 'utf-8').toString('base64'), 'base64')
   entries.push({ path: `moto/${slug}/info.yaml`, mode: '100644', type: 'blob', sha: infoBlob.sha })
 
@@ -370,7 +383,7 @@ async function handleDeployStatus() {
   // Prima col token (quota 5000/h); se il PAT non può leggere Actions, lettura anonima
   // (repo pubblico, quota 60/h per IP condivisa). Se fallisce anche quella: stato sconosciuto,
   // non un errore, così il polling del pannello non mostra un 502.
-  const path = `/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=main&per_page=1`
+  const path = `/repos/${OWNER}/${REPO}/actions/workflows/${WORKFLOW_FILE}/runs?branch=${encodeURIComponent(BRANCH)}&per_page=1`
   let r = await gh(path)
   if (!r.ok) r = await gh(path, { auth: false })
   if (!r.ok) return json(200, { status: 'unknown', conclusion: null })

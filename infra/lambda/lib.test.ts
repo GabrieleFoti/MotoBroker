@@ -10,6 +10,7 @@ import {
   blobReceipt,
   checkReceipt,
   validateMotoData,
+  unknownFields,
 } from './lib.mjs';
 
 const slugs = readdirSync('moto', { withFileTypes: true })
@@ -93,6 +94,16 @@ describe('serializeInfoYaml: casi limite del pannello', () => {
     const out = serializeInfoYaml({ ...base, marca: 'BMW ' });
     expect(out).toContain('marca: "BMW "');
     expect(parseInfoYaml(out).marca).toBe('BMW ');
+  });
+
+  it('un campo sconosciuto blocca la scrittura invece di sparire', () => {
+    expect(() => serializeInfoYaml({ ...base, colore: 'rosso' })).toThrow(/colore/);
+  });
+
+  it('nessun info.yaml del repo ha campi che il pannello perderebbe', () => {
+    for (const slug of slugs) {
+      expect(unknownFields(parseInfoYaml(readFileSync(`moto/${slug}/info.yaml`, 'utf-8'))), slug).toEqual([]);
+    }
   });
 
   it('il file prodotto è sempre YAML valido per js-yaml', () => {
