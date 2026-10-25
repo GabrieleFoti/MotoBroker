@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Lambda backend del CMS MotoBroker: Cognito JWT + API Gateway, committa su GitHub al posto dell'utente (Git Data API via fetch, nessuna dipendenza oltre l'AWS SDK già presente nel runtime).",
-  "main": "index.mjs"
+  "description": "Lambda backend del CMS MotoBroker: Cognito JWT + API Gateway, committa su GitHub al posto dell'utente (Git Data API via fetch). Unica dipendenza oltre all'AWS SDK del runtime: js-yaml, copiato nello zip da deploy.sh.",
+  "main": "index.mjs",
+  "dependencies": {
+    "js-yaml": "^4.1.1"
+  }
 }

@@ -93,7 +93,16 @@ fi
 
 echo "== 3/6: pacchetto Lambda =="
 rm -f "$HERE/.lambda.zip"
-( cd "$HERE/lambda" && zip -q -r "$HERE/.lambda.zip" index.mjs package.json )
+# js-yaml (lo stesso parser di Astro) va nello zip: è l'unica dipendenza oltre all'SDK AWS,
+# preso da node_modules del repo (npm ci prima del deploy).
+JSYAML="$HERE/../node_modules/js-yaml"
+[ -f "$JSYAML/package.json" ] || { echo "manca node_modules/js-yaml: esegui npm ci nella radice del repo" >&2; exit 1; }
+PKG_DIR=$(mktemp -d)
+cp "$HERE/lambda/index.mjs" "$HERE/lambda/lib.mjs" "$HERE/lambda/package.json" "$PKG_DIR/"
+mkdir -p "$PKG_DIR/node_modules"
+cp -R "$JSYAML" "$PKG_DIR/node_modules/js-yaml"
+( cd "$PKG_DIR" && zip -q -r "$HERE/.lambda.zip" . )
+rm -rf "$PKG_DIR"
 
 echo "== 4/6: funzione Lambda $LAMBDA_NAME =="
 ENV_VARS="Variables={GITHUB_OWNER=$GITHUB_OWNER,GITHUB_REPO=$GITHUB_REPO,GITHUB_BRANCH=$GITHUB_BRANCH,GITHUB_TOKEN_SECRET_ID=$SECRET_NAME,WORKFLOW_FILE=deploy.yml}"

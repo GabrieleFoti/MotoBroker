@@ -2,7 +2,7 @@
 
 Backend del pannello admin: Cognito (login email+password, niente account GitHub) + API
 Gateway HTTP API (JWT authorizer) + Lambda `motobroker-cms` (Node.js 22, solo AWS SDK v3 +
-`fetch` globale, nessuna dipendenza extra). **Il repo GitHub resta l'unico archivio dati**
+`fetch` globale; unica dipendenza `js-yaml`, lo stesso parser YAML di Astro). **Il repo GitHub resta l'unico archivio dati**
 (niente database, niente storage immagini dedicato): la Lambda committa su `main` al posto
 dell'utente usando l'API REST/Git Data di GitHub, con lo stesso token che userebbe un
 account con accesso in scrittura al repo — ma senza che l'utente del pannello debba averne
@@ -33,10 +33,11 @@ atomico** per ogni salvataggio (info.yaml + foto nuove + foto rimosse insieme).
   (issuer/audience del pool/client sopra) su **tutte** le rotte (anche `/deploy-status`),
   CORS limitato a `https://motobroker.it`, `https://www.motobroker.it`,
   `http://localhost:4321`.
-- **Secret Manager** `motobroker/github-token`: **non ancora creato** — va fatto da
-  Gabriele con un fine-grained PAT (solo repo MotoBroker, permesso Contents read/write).
-  Non è mai stato messo nel codice né nei log; la Lambda legge solo il nome del secret
-  dall'env var `GITHUB_TOKEN_SECRET_ID` e lo recupera a runtime.
+- **Secrets Manager** `motobroker/github-token`: fine-grained PAT creato da Gabriele (solo
+  repo MotoBroker, permesso Contents read/write; se ha anche Actions: read, `/deploy-status`
+  lo usa). Mai nel codice né nei log; la Lambda legge solo il nome del secret dall'env var
+  `GITHUB_TOKEN_SECRET_ID`. Se GitHub risponde 401 (token ruotato) la Lambda svuota la cache
+  e lo rilegge una volta, quindi la rotazione non richiede redeploy.
 
 Nessuna modifica a Pages, DNS, workflow `.github/workflows/deploy.yml` o a Decap CMS
 (rimane attivo finché la card 2/3 non lo sostituisce).
@@ -47,46 +48,60 @@ Tutte dietro Cognito JWT. `BRANCH` = `main` in produzione (env `GITHUB_BRANCH`,
 configurabile solo per i test E2E su `cms-test`).
 
 ### `GET /moto`
-Legge l'albero Git di `BRANCH`, raggruppa i file per cartella `moto/<slug>/`, parsa
-`info.yaml` (parser YAML minimale su misura per lo schema fisso del progetto, non un parser
-generico) e ritorna `{ headSha, moto: [{slug, marca, modello, anno, km?, cilindrata?,
-prezzo?, descrizione?, venduta, foto[]}] }`. L'ordine di `foto` è quello dichiarato in
-`info.yaml`, con le foto presenti nella cartella ma non elencate accodate in ordine
-alfabetico (stessa regola di `src/lib/foto.ts`).
+Legge l'albero Git di `BRANCH`, raggruppa i file per cartella `moto/<slug>/`, legge
+`info.yaml` con **js-yaml** (lo stesso parser che usa Astro in build, quindi anche i block
+scalar `|` e `>` delle descrizioni scritte da Decap) e ritorna `{ headSha, moto: [{slug,
+marca, modello, anno, km?, cilindrata?, prezzo?, descrizione?, venduta, foto[]}] }`. L'ordine
+di `foto` è quello dichiarato in `info.yaml`, con le foto presenti nella cartella ma non
+elencate accodate in ordine alfabetico (stessa regola di `src/lib/foto.ts`). Se GitHub
+restituisce un albero troncato, la richiesta fallisce invece di lavorare su un elenco
+incompleto.
 
 ### `POST /blobs`
 Body `{content: base64, encoding: "base64"}`, una foto per chiamata. Rifiuta payload oltre
 ~4MB di base64 e qualunque formato diverso da JPEG/PNG/WEBP (verificato sui magic byte del
-file decodificato, non sul nome/Content-Type dichiarato dal client). Ritorna `{sha,
-format}`: lo sha è quello del blob Git appena creato, da passare poi a `PUT /moto/:slug`.
+file decodificato, non sul nome/Content-Type dichiarato dal client). Ritorna `{sha, format,
+receipt}`: `receipt` è un HMAC dello sha firmato lato server; va ripassato a `PUT` insieme
+allo sha, così come foto può finire solo un'immagine passata da `/blobs` e non un blob
+qualunque del repo.
 
 ### `PUT /moto/:slug`
-Body `{headSha, data, photos:[{name, sha?}], previousSlug?}`. Un solo commit su `BRANCH`:
+Body `{headSha, data, photos:[{name, sha?, receipt?}], create?, previousSlug?}`. Un solo
+commit su `BRANCH`. Tre casi espliciti, così una moto non può mai sovrascriverne un'altra:
 
-1. Verifica che `headSha` sia ancora la testa del branch, altrimenti **409** (nessuna
-   scrittura).
+| Caso | Slug | Errori |
+|---|---|---|
+| `create: true` (nuova moto) | deve essere `slugify(marca-modello)` (come Decap) | **409** `SLUG_EXISTS` se `moto/<slug>/` esiste già |
+| `previousSlug` diverso da `:slug` (rinomina esplicita) | deve essere `slugify(marca-modello)` | **404** se l'origine non esiste, **409** `SLUG_EXISTS` se la destinazione esiste |
+| nessuno dei due (aggiornamento) | resta quello della cartella, anche se marca/modello cambiano | **404** se la cartella non esiste |
+
+Lo slug viene imposto solo alla creazione o alla rinomina, come fa Decap: le moto già
+pubblicate con una cartella diversa da `slugify(marca-modello)` (es. `ducati-monster`,
+`husqvarna-fe`, `kawasaki-ninja`) si modificano senza cambiare URL.
+
+Poi:
+1. Verifica che `headSha` sia ancora la testa del branch, altrimenti **409** `HEAD_MOVED`.
 2. Valida `data` con le stesse regole di `src/content.config.ts`.
-3. Rigenera lo slug atteso da `marca`+`modello` con lo stesso algoritmo di Decap
-   (minuscolo, ascii, accenti rimossi, spazi/simboli → `-`) e lo confronta con `:slug`
-   nell'URL: se non combaciano, **400** (lo slug non è scelto liberamente dal client).
-4. Per ogni foto: usa lo sha passato (nuova, già caricata con `/blobs`) oppure, se assente,
-   recupera lo sha del file già esistente nella cartella (`previousSlug` se è una
-   rinomina, altrimenti `slug`) — **400** se non lo trova.
-5. Costruisce un unico albero Git (`git/trees` con `base_tree`) che aggiunge/aggiorna
-   `info.yaml` e le foto, e rimuove le foto non più presenti (o, in caso di rinomina,
-   l'intera vecchia cartella).
-6. Crea il commit (`cms: aggiorna <slug> (<email utente dal JWT>)`) e aggiorna il ref con
-   `force:false`: se nel frattempo il branch è avanzato, GitHub rifiuta l'update e la
-   risposta diventa **409**.
+3. Per ogni foto: se ha `sha` e non è già un file della cartella, serve la `receipt` di
+   `/blobs` (**400** altrimenti); se non ha `sha`, si prende quello del file esistente
+   (**400** se non c'è).
+4. Scrive `info.yaml` nello stile dei file di Decap: valori su una riga quando js-yaml li
+   rilegge identici, altrimenti tra virgolette doppie; descrizioni multilinea come block
+   scalar `|`. Prima di scrivere rilegge il file prodotto e si ferma se un campo non
+   torna identico.
+5. Un unico albero Git (`git/trees` con `base_tree`) con `info.yaml`, foto nuove e foto
+   rimosse (in rinomina, tutta la vecchia cartella); commit `cms: crea|aggiorna|rinomina
+   … <slug> (<email>)`; update del ref con `force:false` → **409** se il branch è avanzato.
 
 ### `DELETE /moto/:slug`
 Body `{headSha}`. Stesso schema 409 di sopra; un commit che rimuove tutta la cartella
 `moto/<slug>/`.
 
 ### `GET /deploy-status`
-Ultima run di `.github/workflows/deploy.yml` su `main` (stato pubblico, letto senza
-autenticazione verso GitHub perché il repo è pubblico — non richiede allo scope del PAT
-l'accesso ad Actions). Serve al pannello per dire "online fra poco" dopo un salvataggio.
+Ultima run di `.github/workflows/deploy.yml` su `main`. Prova prima con il token (quota
+5.000/h; serve `Actions: read` sul PAT), poi in lettura anonima (repo pubblico, 60/h per IP
+condivisa). Se entrambe falliscono risponde **200** con `{status: "unknown"}` invece di un
+errore, così il polling del pannello non va in errore.
 
 ## Niente path traversal / scritture fuori da `moto/<slug>/`
 
@@ -109,43 +124,19 @@ path scritti dalla Lambda sono sempre `moto/<slug (validato)>/<nome foto (valida
 
 **Stima complessiva: ~0,40–0,50€/mese.**
 
-## Stato attuale: bloccato sul secret GitHub
+## Verifiche
 
-Il secret `motobroker/github-token` **non esiste ancora** in Secrets Manager (verificato
-con `describe-secret`: `ResourceNotFoundException`). Tutto il resto dell'infrastruttura è
-deployato e verificato (vedi sotto); le rotte che parlano con GitHub rispondono **500**
-finché il secret non viene creato, perché la Lambda non trova nulla da leggere.
+Test automatici in `npm test` (`infra/lambda/lib.test.ts`, oltre a quelli del sito):
+- ogni `moto/*/info.yaml` del repo viene letto esattamente come lo legge js-yaml/Astro, e
+  riscritto senza modifiche si rilegge identico (compresa la descrizione multilinea di
+  `ducati-monster` e quelle `>` di `kawasaki-zx-9r` e `cf-moto-650-mt`);
+- descrizioni dal pannello con a capo, `#`, `" #"`, due punti, virgolette, tab, CRLF,
+  spazi iniziali/finali, valori che sembrano numeri o booleani: tornano identiche e il file
+  resta YAML valido;
+- slug come Decap, validazione dei campi, magic byte, ricevute dei blob.
 
-Gabriele deve crearlo con:
-
-```bash
-aws secretsmanager create-secret --name motobroker/github-token \
-  --secret-string <fine-grained PAT, permesso Contents read/write sul solo repo MotoBroker> \
-  --profile Zentrya --region us-east-1
-```
-
-Dopo la creazione del secret si potranno eseguire i test end-to-end obbligatori (branch
-`cms-test`, utente Cognito di prova, 401/GET/PUT con 2 foto/409/DELETE) e aprire la PR.
-
-## Verifiche già eseguite (senza il secret)
-
-- `deploy.sh` rieseguito due volte: nessuna modifica inattesa alla seconda run (idempotente).
-- `GET /moto` senza token → **401**.
-- Utente Cognito di prova creato con `admin-set-user-password --permanent`, login con
-  `initiate-auth --auth-flow USER_PASSWORD_AUTH` → token ottenuto.
-- `GET /moto` con token valido → **500** con nei log CloudWatch
-  `ResourceNotFoundException` su `GetSecretValueCommand` (comportamento atteso: authorizer
-  JWT passa, la rotta fallisce solo per il secret mancante).
-- `POST /blobs` con token valido, body `{}` → **400** `encoding deve essere "base64"`
-  (validazione lato server attiva, non serve GitHub per questo controllo).
-- `GET /deploy-status` senza token → **401** (authorizer applicato anche a questa rotta,
-  come richiesto).
-- Utente Cognito di prova cancellato a fine verifica (`list-users` conferma 0 utenti nel
-  pool).
-- Unit test locali (Node, fuori da `npm test`) su `slugify`/`serializeInfoYaml`/
-  `parseInfoYaml`/`detectImageFormat`: il serializzatore YAML riproduce **byte per byte**
-  un `info.yaml` reale del repo (`moto/bmw-r-1150-twin-spark/info.yaml`), round-trip
-  parse→serialize verificato.
+Test end-to-end contro GitHub (branch di prova `cms-test`, utente Cognito di prova poi
+cancellato; nessun commit su `main`): vedi la descrizione della PR per l'ultima esecuzione.
 
 ## Deploy
 
