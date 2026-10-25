@@ -34,7 +34,17 @@ function yamlBlock(key, s) {
   return [`${key}: |${indentInd}${chomp}`, ...lines]
 }
 
+// Campi di info.yaml che il pannello sa leggere e scrivere (src/content.config.ts).
+export const KNOWN_FIELDS = ['marca', 'modello', 'anno', 'km', 'cilindrata', 'prezzo', 'descrizione', 'venduta', 'foto']
+
+export function unknownFields(obj) {
+  return Object.keys(obj || {}).filter((k) => !KNOWN_FIELDS.includes(k) && obj[k] !== undefined && obj[k] !== null)
+}
+
 export function serializeInfoYaml(data) {
+  // I campi non previsti verrebbero tolti in silenzio dal file: meglio fermarsi.
+  const extra = unknownFields(data)
+  if (extra.length) throw new Error(`campi non gestiti dal pannello in info.yaml: ${extra.join(', ')}`)
   const lines = []
   lines.push(`marca: ${yamlScalar(data.marca)}`)
   lines.push(`modello: ${yamlScalar(data.modello)}`)
